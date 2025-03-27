@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Booking</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/emailjs-com/3.2.0/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+
+    <script type="text/javascript">
+        (function () {
+            emailjs.init('6Wk6R2DTBHBjcMnEr'); // Replace with your actual User ID
+        })();
+    </script>
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <div class="wrapper" id="w1">
+        <header>
+            <div class="event-title">
+                ELYZIUM EVENTS
+            </div>
+        </header>
+        <div class="container">
+            <h1>LunaFilx Sundown Cinema</h1>
+            <div class="form-group">
+                <label for="nameInput">Name:</label>
+                <input type="text" id="nameInput" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label for="seatInput">Number of Seats:</label>
+                <input type="number" id="seatInput" placeholder="Enter number of seats" min="1">
+            </div>
+            <div class="form-group">
+                <label for="contactInput">Email:</label>
+                <input type="email" id="contactInput" placeholder="Enter your email">
+            </div>
+            <div class="buttons">
+                <button id="generateQRButton">Buy</button>
+                <button id="refreshBtn">Refresh</button>
+            </div>
+
+            <div id="qrCodeContainer">
+                <img id="qrCodeImage" src="" alt="QR Code" style="display: none;">
+                <p id="placeholder">Your QR Code will appear here</p>
+            </div>
+
+
+            <div class="loader" id="loader">
+               
+                <span class="load"></span>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="contact-details">
+            <p><strong>Contact Us:</strong></p>
+            <p>Email: elyziumevent@gmail.com</p>
+            <p>Phone: +94 71 653 1817</p>
+            <div class="social-icons">
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/sakunakavindaa/?next=%2F" target="_blank" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/tadashi.hamada.16940" target="_blank" aria-label="Facebook">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <!-- WhatsApp -->
+                <a href="https://wa.me/94716531817" target="_blank" aria-label="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <!-- Email -->
+                <a href="mailto:elyziumevent@gmail.com" aria-label="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
