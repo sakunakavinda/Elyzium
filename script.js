@@ -10,6 +10,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const placeholder = document.getElementById('placeholder');
     const loader = document.getElementById('loader');
     const subTotalElement = document.getElementById('subtotal');
+    let status = 0;
+
+
+    // Firebase configuration and initialization
+    const firebaseConfig = {
+        apiKey: "AIzaSyCVilUKEZ6qt3ASm_AwGaatTqGpO-OaXOc",
+        authDomain: "elyzium-5e378.firebaseapp.com",
+        projectId: "elyzium-5e378",
+        storageBucket: "elyzium-5e378.appspot.com",
+        messagingSenderId: "123407494252",
+        appId: "1:123407494252:web:5e496e80e23229aafebc49"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
     
     // Ticket prices
     const ticketPrices = {
@@ -34,6 +49,13 @@ document.addEventListener('DOMContentLoaded', function () {
     updateSubTotal();
 
     generateQRButton.addEventListener('click', async function () {
+
+        if (status==1){
+            alert("Generation process already initiated")
+            return;
+        }
+
+        status=1;
         // Helper function to check connectivity
         async function checkConnection() {
             if (!navigator.onLine) return false;
@@ -109,6 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             clearInputs();
             alert('Ticket purchased successfully! Email sent with QR code.');
+            status=0;
             
         } catch (error) {
             console.error('Error:', error);
@@ -246,18 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
         qrCodeImage.src = '';
     }
 
-    // Firebase configuration and initialization
-    const firebaseConfig = {
-        apiKey: "AIzaSyCVilUKEZ6qt3ASm_AwGaatTqGpO-OaXOc",
-        authDomain: "elyzium-5e378.firebaseapp.com",
-        projectId: "elyzium-5e378",
-        storageBucket: "elyzium-5e378.appspot.com",
-        messagingSenderId: "123407494252",
-        appId: "1:123407494252:web:5e496e80e23229aafebc49"
-    };
     
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
     
     // Function to save ticket data to Firestore
     async function saveToFirestore(ticketId, ticketData) {
