@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bug Report & Suggestions</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Submit Feedback</h1>
+        <form id="feedbackForm">
+            <div class="form-group">
+                <label for="name">Your Name (Optional)</label>
+                <input type="text" id="name" placeholder="Name">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email (Optional)</label>
+                <input type="email" id="email" placeholder="your@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="type">Type</label>
+                <select id="type" required>
+                    <option value="" disabled selected>Select one</option>
+                    <option value="bug">Bug Report</option>
+                    <option value="suggestion">Feature Suggestion</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Description*</label>
+                <textarea id="message" rows="5" required placeholder="Describe the issue or suggestion in detail..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="screenshot">Screenshot (Optional)</label>
+                <input type="file" id="screenshot" accept="image/*">
+            </div>
+            
+            <button type="submit" id="submitBtn">Submit</button>
+        </form>
+        
+        <div id="successMessage" class="hidden">
+            <p>✅ Thank you! Your feedback has been submitted.</p>
+            <button id="newSubmission">Submit Another</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

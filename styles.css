@@ -136,7 +136,28 @@ header {
     display: block;
 }
 
+#reportBtn{
+    background-color: #27ae60; 
+    border: none;
+    border-radius: 5px;
+    color: white;
+    transition: background-color 0.3s ease;
+    font-size: 1rem;
+    padding: 6px 12px;
+    cursor: pointer;
+    width: 50%;
+    margin: 10px auto;
+}
+
+.minorP{
+    font-size: 0.6rem;
+}
+
 #buyTicketsBtn:hover {
+    background-color: #219653;
+}
+
+#reportBtn:hover {
     background-color: #219653;
 }
 
@@ -310,6 +331,85 @@ justify-content: center;
     background-color: #67e7ad;
     border-radius: inherit;
     animation: loading2_713 3.5s ease both infinite;
+}
+
+
+
+
+
+/*report page*/
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    background: #036619;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+button:hover {
+    background: #099907;
+}
+
+.hidden {
+    display: none;
+}
+
+#successMessage {
+    text-align: center;
+    padding: 20px;
+}
+
+#successMessage p {
+    color: #27ae60;
+    font-size: 18px;
 }
 
 @keyframes text_713 {
