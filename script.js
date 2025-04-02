@@ -4,48 +4,120 @@ document.addEventListener('DOMContentLoaded', function () {
     const refreshBtn = document.getElementById('refreshBtn');
     const nameInput = document.getElementById('nameInput');
     const seatInput = document.getElementById('seatInput');
+    const ticketTypeSelect = document.getElementById('ticketType');
     const contactInput = document.getElementById('contactInput');
     const qrCodeImage = document.getElementById('qrCodeImage');
     const placeholder = document.getElementById('placeholder');
     const loader = document.getElementById('loader');
-    const ticketPrice = 2000;
+    const subTotalElement = document.getElementById('subtotal');
+    
+    // Ticket prices
+    const ticketPrices = {
+        picnic_mat: 1000,
+        camping_chair: 1500
+    };
 
-    generateQRButton.addEventListener('click', async function () {  // Make this async
+    // Initialize subtotal calculation
+    function updateSubTotal() {
+        const seats = parseInt(seatInput.value.trim()) || 0;
+        const selectedTicketType = ticketTypeSelect.value;
+        const pricePerTicket = ticketPrices[selectedTicketType];
+        const subTotal = seats * pricePerTicket;
+        subTotalElement.textContent = `LKR ${subTotal} /=`;
+    }
+
+    // Set up event listeners for changes
+    seatInput.addEventListener('input', updateSubTotal);
+    ticketTypeSelect.addEventListener('change', updateSubTotal);
+
+    // Initialize subtotal on page load
+    updateSubTotal();
+
+    generateQRButton.addEventListener('click', async function () {
+        // Helper function to check connectivity
+        async function checkConnection() {
+            if (!navigator.onLine) return false;
+            try {
+                // More reliable check than just navigator.onLine
+                const response = await fetch('https://www.google.com', { method: 'HEAD', mode: 'no-cors' });
+                return true;
+            } catch {
+                return false;
+            }
+        }
+    
+        // Initial connection check
+        if (!(await checkConnection())) {
+            alert("No internet connection. Please check your network and try again.");
+            return;
+        }
+    
         const name = nameInput.value.trim();
         const seats = parseInt(seatInput.value.trim());
         const contact = contactInput.value.trim();
-
+        const selectedTicketType = ticketTypeSelect.value;
+    
         if (!name || isNaN(seats) || !contact) {
             alert('Please fill all details correctly');
             return;
         }
-
+    
         if (!validateEmail(contact)) {
             alert('Please enter a valid email address');
             return;
         }
-
+    
         // Disable button and show processing state
         generateQRButton.disabled = true;
         generateQRButton.textContent = 'Processing...';
         loader.style.display = 'flex';
-
+    
         try {
+            // Check connection before starting process
+            if (!(await checkConnection())) {
+                throw new Error("No internet connection");
+            }
+    
             const ticketId = generateTicketId();
-            const ticketData = `${ticketId},${name},${seats},${contact}`;
+            const pricePerTicket = ticketPrices[selectedTicketType];
+            const total = seats * pricePerTicket;
+            const ticketData = `${ticketId},${name},${seats},${contact},${selectedTicketType},${total}`;
             const encryptedData = encrypt(ticketData);
             const qrCodeImageUrl = generateQRCode(encryptedData);
-            const total = seats * ticketPrice;
             
-            // Await the email sending process
-            await sendEmail(contact, ticketId, name, seats, total, qrCodeImageUrl);
+            // Check connection before Firestore
+            if (!(await checkConnection())) {
+                throw new Error("Connection lost before saving to database");
+            }
             
-            alert('Email sent successfully with QR code!');
+            await saveToFirestore(ticketId, {
+                contact: contact,
+                name: name,
+                seatCount: seats,
+                ticketId: ticketId,
+                totalPrice: total,
+                ticketType: selectedTicketType,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            // Check connection before email
+            if (!(await checkConnection())) {
+                throw new Error("Connection lost before sending email");
+            }
+            
+            await sendEmail(contact, ticketId, name, seats, total, selectedTicketType, qrCodeImageUrl);
+            
+            clearInputs();
+            alert('Ticket purchased successfully! Email sent with QR code.');
+            
         } catch (error) {
             console.error('Error:', error);
-            alert('Error processing your request: ' + error.message);
+            if (error.message.includes("internet") || error.message.includes("Connection")) {
+                alert("Network error: Please check your internet connection and try again.");
+            } else {
+                alert('Error processing your request: ' + error.message);
+            }
         } finally {
-            // Reset button state and hide loader
             generateQRButton.disabled = false;
             generateQRButton.textContent = 'Buy';
             loader.style.display = 'none';
@@ -87,12 +159,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function generateQRCode(data) {
-        // Create QR code with higher error correction
-        const qr = qrcode(0, 'H'); // 'H' for High error correction
+        const qr = qrcode(0, 'H');
         qr.addData(data);
         qr.make();
     
-        // Increase size and add margin
         const size = 250;
         const margin = 20;
         const totalSize = size + margin * 2;
@@ -102,19 +172,16 @@ document.addEventListener('DOMContentLoaded', function () {
         canvas.height = totalSize;
         const ctx = canvas.getContext('2d');
         
-        // Fill background
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, totalSize, totalSize);
         
-        // Calculate module size
         const moduleCount = qr.getModuleCount();
         const moduleSize = size / moduleCount;
         
-        // Draw QR code with margin
         for (let x = 0; x < moduleCount; x++) {
             for (let y = 0; y < moduleCount; y++) {
                 const isDark = qr.isDark(x, y);
-                ctx.fillStyle = isDark ? '#000000' : '#FFFFFF'; // Higher contrast
+                ctx.fillStyle = isDark ? '#000000' : '#FFFFFF';
                 ctx.fillRect(
                     margin + x * moduleSize,
                     margin + y * moduleSize,
@@ -124,10 +191,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     
-        // Create image data URL
-        const imageUrl = canvas.toDataURL('image/png', 1.0); // Highest quality
+        const imageUrl = canvas.toDataURL('image/png', 1.0);
         
-        // Display the QR code
         placeholder.style.display = 'none';
         qrCodeImage.src = imageUrl;
         qrCodeImage.style.display = 'block';
@@ -135,9 +200,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return imageUrl;
     }
     
-    async function sendEmail(recipientEmail, ticketId, name, seats, total, qrCodeBase64) {
+    async function sendEmail(recipientEmail, ticketId, name, seats, total, ticketType, qrCodeBase64) {
         try {
-            // 1. Upload QR code to ImgBB
             const formData = new FormData();
             const base64Data = qrCodeBase64.split(',')[1];
             formData.append('image', base64Data);
@@ -154,7 +218,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const uploadData = await uploadResponse.json();
             const qrCodeUrl = uploadData.data.url;
     
-            // 2. Send email with the hosted image URL
             await emailjs.send('service_mqh69bb', 'template_gak2o99', {
                 recipientEmail: recipientEmail,
                 us: 'Elyzium Events',
@@ -162,12 +225,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 email: 'elyziumevents@gmail.com',
                 ticket_id: ticketId,
                 seats: seats,
+                ticket_type: ticketType === 'picnic_mat' ? 'Picnic Mat Seating' : 'Camping Chair Seating',
                 total: total,
                 qr_code: qrCodeUrl
             });
         } catch (error) {
             console.error('Error:', error);
-            throw error; // Re-throw to be caught by the outer try-catch
+            throw error;
         }
     }
 
@@ -175,8 +239,35 @@ document.addEventListener('DOMContentLoaded', function () {
         nameInput.value = '';
         seatInput.value = '';
         contactInput.value = '';
+        ticketTypeSelect.value = 'picnic_mat';
+        subTotalElement.textContent = 'LKR 0 /=';
         placeholder.style.display = 'block';
         qrCodeImage.style.display = 'none';
         qrCodeImage.src = '';
+    }
+
+    // Firebase configuration and initialization
+    const firebaseConfig = {
+        apiKey: "AIzaSyCVilUKEZ6qt3ASm_AwGaatTqGpO-OaXOc",
+        authDomain: "elyzium-5e378.firebaseapp.com",
+        projectId: "elyzium-5e378",
+        storageBucket: "elyzium-5e378.appspot.com",
+        messagingSenderId: "123407494252",
+        appId: "1:123407494252:web:5e496e80e23229aafebc49"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    
+    // Function to save ticket data to Firestore
+    async function saveToFirestore(ticketId, ticketData) {
+        try {
+            const db = firebase.firestore();
+            await db.collection('tickets').doc(ticketId).set(ticketData);
+            console.log('Ticket saved to Firestore with ID:', ticketId);
+        } catch (error) {
+            console.error('Error saving to Firestore:', error);
+            throw error;
+        }
     }
 });

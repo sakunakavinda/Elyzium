@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Booking</title>
+    <title>Elyzium Events</title>
     <link rel="stylesheet" href="styles.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -15,6 +15,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <script type="text/javascript">
         (function () {
@@ -28,7 +30,7 @@
     <div class="wrapper" id="w1">
         <header>
             <div class="event-title">
-                ELYZIUM EVENTS
+                ELYZIUM EVENTS beta
             </div>
         </header>
         <div class="container">
@@ -42,8 +44,19 @@
                 <input type="number" id="seatInput" placeholder="Enter number of seats" min="1">
             </div>
             <div class="form-group">
+                <label for="ticketType">Ticket Type:</label>
+                <select id="ticketType" class="form-control">
+                    <option value="picnic_mat">Picnic Mat Seating - 1000 LKR</option>
+                    <option value="camping_chair">Camping Chair Seating - 1500 LKR</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="contactInput">Email:</label>
                 <input type="email" id="contactInput" placeholder="Enter your email">
+            </div>
+            <div class="display">
+                <p>Sub Total :</p>
+                <p id="subtotal">LKR 0/=</p>
             </div>
             <div class="buttons">
                 <button id="generateQRButton">Buy</button>
@@ -57,7 +70,7 @@
 
 
             <div class="loader" id="loader">
-               
+
                 <span class="load"></span>
             </div>
         </div>
