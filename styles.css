@@ -337,50 +337,8 @@ justify-content: center;
 
 
 
-/*report page*/
 
 
-
-input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-textarea {
-    resize: vertical;
-}
-
-button {
-    background: #166a55;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    width: 100%;
-}
-
-button:hover {
-    background: #3bba85;
-}
-
-.hidden {
-    display: none;
-}
-
-#successMessage {
-    text-align: center;
-    padding: 20px;
-}
-
-#successMessage p {
-    color: #27ae60;
-    font-size: 18px;
-}
 
 @keyframes text_713 {
     0% {
@@ -573,5 +531,151 @@ button:hover {
 
     .social-icons a {
         font-size: 18px;
+    }
+}
+
+
+
+
+/* Report Page Styles */
+#feedbackForm {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 99, 71, 0.2);
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+#feedbackForm .form-group {
+    margin-bottom: 20px;
+}
+
+#feedbackForm input, 
+#feedbackForm select, 
+#feedbackForm textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#feedbackForm textarea {
+    resize: vertical;
+    min-height: 120px;
+    max-width: 100%;
+}
+
+#feedbackForm select {
+    background-color: white;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+}
+
+#submitBtn {
+    background-color: #027476;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#submitBtn:hover {
+    background-color: #219653;
+}
+
+#submitBtn:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+#successMessage {
+    background-color: white;
+    padding: 20px;
+    display: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 99, 71, 0.2);
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+}
+
+#successMessage p {
+    color: #27ae60;
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+#newSubmission {
+    background-color: #027476;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+#newSubmission:hover {
+    background-color: #014553;
+}
+
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+    #feedbackForm {
+        padding: 30px;
+    }
+    
+    #feedbackForm label {
+        font-size: 1rem;
+    }
+    
+    #feedbackForm input, 
+    #feedbackForm select, 
+    #feedbackForm textarea {
+        font-size: 1rem;
+        padding: 12px;
+    }
+    
+    #submitBtn {
+        font-size: 1.1rem;
+    }
+    
+    #successMessage p {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #feedbackForm {
+        padding: 15px;
+        margin: 15px;
+    }
+    
+    #feedbackForm input, 
+    #feedbackForm select, 
+    #feedbackForm textarea {
+        padding: 8px;
+        font-size: 0.8rem;
+    }
+    
+    #submitBtn {
+        padding: 10px;
+        font-size: 0.9rem;
     }
 }
