@@ -12,12 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const subTotalElement = document.getElementById('subtotal');
     let status = 0;
 
-    //Stripe
-    var stripe = Stripe(
-        "pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouL jC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ"
-    )
-
-
     // Firebase configuration and initialization
     const firebaseConfig = {
         apiKey: "AIzaSyCVilUKEZ6qt3ASm_AwGaatTqGpO-OaXOc",
@@ -54,78 +48,68 @@ document.addEventListener('DOMContentLoaded', function () {
     updateSubTotal();
 
     generateQRButton.addEventListener('click', async function () {
-
-        stripe.redirectToCheckout({
-            lineItems: [{
-                price: 'price_1R9eDo4ZyAT5oIFLT3xkaRZZ', // Stripe Price ID
-                quantity: 1,
-              }],
-              mode: 'payment',
-              successUrl: 'https://google.com/success',
-              cancelUrl: 'https://yoursite.com/cancel',
-        })
-
-        if (status==1){
-            alert("Generation process already initiated")
-            return;
-        }
-
-        status=1;
-        // Helper function to check connectivity
-        async function checkConnection() {
-            if (!navigator.onLine) return false;
-            try {
-                // More reliable check than just navigator.onLine
-                const response = await fetch('https://www.google.com', { method: 'HEAD', mode: 'no-cors' });
-                return true;
-            } catch {
-                return false;
-            }
-        }
-    
-        // Initial connection check
-        if (!(await checkConnection())) {
-            alert("No internet connection. Please check your network and try again.");
+        if (status === 1) {
+            alert("Generation process already initiated");
             return;
         }
     
+        status = 1;
+    
+        // Validate inputs first
         const name = nameInput.value.trim();
         const seats = parseInt(seatInput.value.trim());
         const contact = contactInput.value.trim();
         const selectedTicketType = ticketTypeSelect.value;
     
-        if (!name || isNaN(seats) || !contact) {
+        if (!name || isNaN(seats) || seats <= 0 || !contact) {
             alert('Please fill all details correctly');
+            status = 0;
             return;
         }
     
         if (!validateEmail(contact)) {
             alert('Please enter a valid email address');
+            status = 0;
             return;
         }
     
-        // Disable button and show processing state
-        generateQRButton.disabled = true;
-        generateQRButton.textContent = 'Processing...';
-        loader.style.display = 'flex';
+        // Calculate total
+        const pricePerTicket = ticketPrices[selectedTicketType];
+        const total = seats * pricePerTicket;
+    
+        // Stripe Price IDs for each ticket type
+        const stripePriceIds = {
+            picnic_mat: 'price_1R9q764ZyAT5oIFLt3qvmW9J', // Replace with your actual Price ID
+            camping_chair: 'price_1R9q7V4ZyAT5oIFLjFmPkEJ2' // Replace with your actual Price ID
+        };
     
         try {
-            // Check connection before starting process
-            if (!(await checkConnection())) {
-                throw new Error("No internet connection");
+            // First initiate Stripe checkout
+            const stripe = Stripe("pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouLjC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ");
+            
+            const { error } = await stripe.redirectToCheckout({
+                lineItems: [{
+                    price: stripePriceIds[selectedTicketType], // Use the correct Price ID
+                    quantity: seats, // Quantity is the number of seats
+                }],
+                mode: 'payment',
+                successUrl: `${window.location.origin}/index.html?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+                cancelUrl: `${window.location.origin}/buy.html?payment=cancelled`,
+            });
+    
+            if (error) {
+                throw new Error(error.message);
             }
     
+            // Only proceed with QR generation if Stripe checkout succeeds
+            generateQRButton.disabled = true;
+            generateQRButton.textContent = 'Processing...';
+            loader.style.display = 'flex';
+    
             const ticketId = generateTicketId();
-            const pricePerTicket = ticketPrices[selectedTicketType];
-            const total = seats * pricePerTicket;
             const ticketData = `${ticketId},${name},${seats},${contact},${selectedTicketType},${total}`;
             const encryptedData = encrypt(ticketData);
             const qrCodeImageUrl = generateQRCode(encryptedData);
-            
-            // Check connection before Firestore
-            if (!(await checkConnection())) {
-                throw new Error("Connection lost before saving to database");
-            }
             
             await saveToFirestore(ticketId, {
                 contact: contact,
@@ -134,27 +118,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 ticketId: ticketId,
                 totalPrice: total,
                 ticketType: selectedTicketType,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                paymentStatus: 'pending' // Track payment status
             });
-            
-            // Check connection before email
-            if (!(await checkConnection())) {
-                throw new Error("Connection lost before sending email");
-            }
             
             await sendEmail(contact, ticketId, name, seats, total, selectedTicketType, qrCodeImageUrl);
             
             clearInputs();
             alert('Ticket purchased successfully! Email sent with QR code.');
-            status=0;
+            status = 0;
             
         } catch (error) {
             console.error('Error:', error);
-            if (error.message.includes("internet") || error.message.includes("Connection")) {
-                alert("Network error: Please check your internet connection and try again.");
-            } else {
-                alert('Error processing your request: ' + error.message);
-            }
+            alert('Error processing your request: ' + error.message);
+            status = 0;
         } finally {
             generateQRButton.disabled = false;
             generateQRButton.textContent = 'Buy';
