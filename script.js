@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const subTotalElement = document.getElementById('subtotal');
     let status = 0;
 
+    //Stripe
+    var stripe = Stripe(
+        "pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouL jC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ"
+    )
+
 
     // Firebase configuration and initialization
     const firebaseConfig = {
@@ -49,6 +54,16 @@ document.addEventListener('DOMContentLoaded', function () {
     updateSubTotal();
 
     generateQRButton.addEventListener('click', async function () {
+
+        stripe.redirectToCheckout({
+            lineItems: [{
+                price: 'price_1R9eDo4ZyAT5oIFLT3xkaRZZ', // Stripe Price ID
+                quantity: 1,
+              }],
+              mode: 'payment',
+              successUrl: 'https://google.com/success',
+              cancelUrl: 'https://yoursite.com/cancel',
+        })
 
         if (status==1){
             alert("Generation process already initiated")
@@ -282,4 +297,9 @@ document.addEventListener('DOMContentLoaded', function () {
             throw error;
         }
     }
+
+
+ 
+    
+
 });
