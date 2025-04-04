@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     emailjs.init('6Wk6R2DTBHBjcMnEr');
     
     // DOM Elements
+    const title = document.getElementById('event-title');
     const generateQRButton = document.getElementById('generateQRButton');
     const refreshBtn = document.getElementById('refreshBtn');
     const nameInput = document.getElementById('nameInput');
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const placeholder = document.getElementById('placeholder');
     const loader = document.getElementById('loader');
     const subTotalElement = document.getElementById('subtotal');
+
     let status = 0;
 
     // Firebase configuration and initialization
@@ -49,6 +51,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listeners for form changes
     seatInput.addEventListener('input', updateSubTotal);
     ticketTypeSelect.addEventListener('change', updateSubTotal);
+    title.addEventListener('click', function() {
+        window.location.href = './index.html';
+    });
+
 
     // Show cancellation message
     function showCancellationMessage() {
@@ -86,6 +92,8 @@ document.addEventListener('DOMContentLoaded', function() {
             alert("Generation process already initiated");
             return;
         }
+
+        
     
         status = 1;
     
@@ -115,6 +123,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     
         try {
+            qrCodeImage.style.display = 'flex'
+            placeholder.style.display = 'none'
             generateQRButton.disabled = true;
             generateQRButton.textContent = 'Processing...';
             loader.style.display = 'flex';
@@ -208,4 +218,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize the page
     initializePage();
+
+
 });
