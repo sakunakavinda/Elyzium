@@ -25,17 +25,17 @@ document.addEventListener('DOMContentLoaded', function() {
         messagingSenderId: "123407494252",
         appId: "1:123407494252:web:5e496e80e23229aafebc49"
     };
-    firebase.initializeApp(firebaseConfig);
+    
+    // Initialize Firebase only if not already initialized
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     
     // Ticket prices
     const ticketPrices = {
         picnic_mat: 1000,
         camping_chair: 1500
     };
-
-    // Track navigation state
-    let isBackNavigation = false;
-    let isInitialLoad = true;
 
     // Initialize subtotal calculation
     function updateSubTotal() {
@@ -69,19 +69,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Initialize page
-    function initializePage(fromBackButton = false) {
+    function initializePage() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('payment') === 'cancelled') {
             showCancellationMessage();
+            // Clean the URL
             window.history.replaceState({}, document.title, window.location.pathname);
         }
         
         updateSubTotal();
-        
-        if (fromBackButton) {
-            console.log('Handling browser back button navigation');
-            // Add any back-button-specific logic here
-        }
     }
 
     // Generate QR Button Click Handler
@@ -106,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (contact != contactConf) {
+        if (contact !== contactConf) {
             alert('Emails do not match');
             status = 0;  
             return;
@@ -135,7 +131,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 total
             };
             
-            const encodedData = encodeURIComponent(JSON.stringify(ticketData));
+            // Save to Firestore first (as pending)
+            const db = firebase.firestore();
+            await db.collection('tickets').doc(ticketId).set({
+                ...ticketData,
+                paymentStatus: 'pending',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
             const stripePriceIds = {
                 picnic_mat: 'price_1R9q764ZyAT5oIFLt3qvmW9J',
@@ -150,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     quantity: seats,
                 }],
                 mode: 'payment',
-                successUrl: `${window.location.origin}/success.html?data=${encodedData}`,
+                successUrl: `${window.location.origin}/success.html?ticketId=${ticketId}`,
                 cancelUrl: `${window.location.origin}/buy.html?payment=cancelled`,
                 clientReferenceId: ticketId,
             });
@@ -161,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
             alert('Error processing your request: ' + error.message);
             status = 0;
-        } finally {
             generateQRButton.disabled = false;
             generateQRButton.textContent = 'Buy';
             loader.style.display = 'none';
@@ -198,24 +199,13 @@ document.addEventListener('DOMContentLoaded', function() {
         contactInputConf.value = '';
         ticketTypeSelect.value = 'picnic_mat';
         subTotalElement.textContent = 'LKR 0 /=';
-        placeholder.style.display = 'block';
-        qrCodeImage.style.display = 'none';
-        qrCodeImage.src = '';
+        if (placeholder) placeholder.style.display = 'block';
+        if (qrCodeImage) {
+            qrCodeImage.style.display = 'none';
+            qrCodeImage.src = '';
+        }
     }
 
-    // Navigation Detection
-    window.addEventListener('popstate', function() {
-        isBackNavigation = true;
-    });
-
-    window.addEventListener('pageshow', function(event) {
-        if (event.persisted || isBackNavigation) {
-            initializePage(true);
-            isBackNavigation = false;
-        } else if (isInitialLoad) {
-            initializePage(false);
-            isInitialLoad = false;
-        }
-    });
+    // Initialize the page
+    initializePage();
 });
-

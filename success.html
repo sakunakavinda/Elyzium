@@ -7,6 +7,58 @@
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .success-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .success-icon {
+            color: #4CAF50;
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        #qr-code-container {
+            margin: 20px 0;
+        }
+        #qr-code {
+            max-width: 200px;
+            margin: 0 auto;
+            display: block;
+        }
+        .ticket-info {
+            text-align: left;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
     <div id="loader" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
@@ -16,10 +68,22 @@
         </div>
     </div>
     
-    <div id="success-message" style="display: none; text-align: center; padding: 20px;">
-        <h2>Ticket Generated Successfully!</h2>
-        <p>Your ticket has been sent to your email address.</p>
-        <a href="/">Return to Home</a>
+    <div id="success-message" style="display: none;" class="container">
+        <div class="success-box">
+            <div class="success-icon">✓</div>
+            <h2>Ticket Generated Successfully!</h2>
+            <p>Your ticket details have been sent to your email address.</p>
+            
+            <div id="qr-code-container">
+                <img id="qr-code" src="" alt="QR Code">
+            </div>
+            
+            <div id="ticket-info" class="ticket-info">
+                <!-- Ticket info will be inserted here -->
+            </div>
+            
+            <a href="./" class="btn">Return to Home</a>
+        </div>
     </div>
 
     <script>
@@ -32,43 +96,45 @@
             messagingSenderId: "123407494252",
             appId: "1:123407494252:web:5e496e80e23229aafebc49"
         };
-        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize Firebase only if not already initialized
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         
         // Initialize EmailJS
         emailjs.init('6Wk6R2DTBHBjcMnEr');
 
         document.addEventListener('DOMContentLoaded', async function() {
             const urlParams = new URLSearchParams(window.location.search);
-            const encodedData = urlParams.get('data');
+            const ticketId = urlParams.get('ticketId');
             
-            if (!encodedData) {
-                window.location.href = '/buy.html';
+            if (!ticketId) {
+                window.location.href = './buy.html';
                 return;
             }
 
             try {
-                // Decode the ticket data
-                const ticketData = JSON.parse(decodeURIComponent(encodedData));
-                
                 const db = firebase.firestore();
-                const ticketRef = db.collection('tickets').doc(ticketData.ticketId);
+                const ticketRef = db.collection('tickets').doc(ticketId);
                 
-                // Check if already processed (in case of page refresh)
+                // Check if ticket exists and is paid
                 const doc = await ticketRef.get();
-                if (doc.exists && doc.data().paymentStatus === 'paid') {
-                    showSuccessUI();
+                
+                if (!doc.exists) {
+                    throw new Error('Ticket not found');
+                }
+                
+                const ticketData = doc.data();
+                
+                // If already processed, just show the success message
+                if (ticketData.paymentStatus === 'paid') {
+                    showSuccessUI(ticketData);
                     return;
                 }
                 
-                // Save to Firestore with paid status
-                await ticketRef.set({
-                    contact: ticketData.contact,
-                    name: ticketData.name,
-                    seatCount: ticketData.seats,
-                    ticketId: ticketData.ticketId,
-                    totalPrice: ticketData.total,
-                    ticketType: ticketData.ticketType,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                // Update payment status to paid
+                await ticketRef.update({
                     paymentStatus: 'paid',
                     paidAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
@@ -89,21 +155,38 @@
                     qrCodeImageUrl
                 );
                 
-                showSuccessUI();
+                showSuccessUI(ticketData);
                 
             } catch (error) {
                 console.error('Error:', error);
                 alert('Error processing your ticket: ' + error.message);
-                window.location.href = '/buy.html';
+                window.location.href = './buy.html';
             }
         });
 
-        function showSuccessUI() {
+        function showSuccessUI(ticketData) {
             document.getElementById('loader').style.display = 'none';
+            
+            // Display ticket info
+            const ticketInfoDiv = document.getElementById('ticket-info');
+            ticketInfoDiv.innerHTML = `
+                <h3>Ticket Details</h3>
+                <p><strong>Ticket ID:</strong> ${ticketData.ticketId}</p>
+                <p><strong>Name:</strong> ${ticketData.name}</p>
+                <p><strong>Seats:</strong> ${ticketData.seats}</p>
+                <p><strong>Ticket Type:</strong> ${ticketData.ticketType === 'picnic_mat' ? 'Picnic Mat' : 'Camping Chair'}</p>
+                <p><strong>Total:</strong> LKR ${ticketData.total} /=</p>
+            `;
+            
+            // Generate and display QR code
+            const qrData = `${ticketData.ticketId},${ticketData.name},${ticketData.seats},${ticketData.contact},${ticketData.ticketType},${ticketData.total}`;
+            const encryptedData = encrypt(qrData);
+            const qrCodeImageUrl = generateQRCode(encryptedData);
+            document.getElementById('qr-code').src = qrCodeImageUrl;
+            
             document.getElementById('success-message').style.display = 'block';
         }
 
-        // Your existing encrypt(), generateQRCode(), and sendEmail() functions here
         function encrypt(ticketData) {
             const AES_KEY = 'Wagasenevi123456';
             const key = CryptoJS.enc.Utf8.parse(AES_KEY);
@@ -155,9 +238,12 @@
         
         async function sendEmail(recipientEmail, ticketId, name, seats, total, ticketType, qrCodeBase64) {
             try {
+                // Convert base64 to blob for upload
+                const base64Response = await fetch(qrCodeBase64);
+                const blob = await base64Response.blob();
+                
                 const formData = new FormData();
-                const base64Data = qrCodeBase64.split(',')[1];
-                formData.append('image', base64Data);
+                formData.append('image', blob, 'qr-code.png');
                 
                 const uploadResponse = await fetch('https://api.imgbb.com/1/upload?key=fd2ccc747be81c79cc64af5ee7c73d72', {
                     method: 'POST',
