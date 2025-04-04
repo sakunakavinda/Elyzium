@@ -728,3 +728,15 @@ justify-content: center;
         font-size: 0.9rem;
     }
 }
+
+
+
+
+.payment-message {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

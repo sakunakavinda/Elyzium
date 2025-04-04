@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Successful</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+</head>
+<body>
+    <div id="loader" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <div>
+            <h2>Processing your ticket...</h2>
+            <p>Please wait while we generate your ticket.</p>
+        </div>
+    </div>
+    
+    <div id="success-message" style="display: none; text-align: center; padding: 20px;">
+        <h2>Ticket Generated Successfully!</h2>
+        <p>Your ticket has been sent to your email address.</p>
+        <a href="/">Return to Home</a>
+    </div>
+
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVilUKEZ6qt3ASm_AwGaatTqGpO-OaXOc",
+            authDomain: "elyzium-5e378.firebaseapp.com",
+            projectId: "elyzium-5e378",
+            storageBucket: "elyzium-5e378.appspot.com",
+            messagingSenderId: "123407494252",
+            appId: "1:123407494252:web:5e496e80e23229aafebc49"
+        };
+        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize EmailJS
+        emailjs.init('6Wk6R2DTBHBjcMnEr');
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedData = urlParams.get('data');
+            
+            if (!encodedData) {
+                window.location.href = '/buy.html';
+                return;
+            }
+
+            try {
+                // Decode the ticket data
+                const ticketData = JSON.parse(decodeURIComponent(encodedData));
+                
+                const db = firebase.firestore();
+                const ticketRef = db.collection('tickets').doc(ticketData.ticketId);
+                
+                // Check if already processed (in case of page refresh)
+                const doc = await ticketRef.get();
+                if (doc.exists && doc.data().paymentStatus === 'paid') {
+                    showSuccessUI();
+                    return;
+                }
+                
+                // Save to Firestore with paid status
+                await ticketRef.set({
+                    contact: ticketData.contact,
+                    name: ticketData.name,
+                    seatCount: ticketData.seats,
+                    ticketId: ticketData.ticketId,
+                    totalPrice: ticketData.total,
+                    ticketType: ticketData.ticketType,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    paymentStatus: 'paid',
+                    paidAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Generate QR code
+                const qrData = `${ticketData.ticketId},${ticketData.name},${ticketData.seats},${ticketData.contact},${ticketData.ticketType},${ticketData.total}`;
+                const encryptedData = encrypt(qrData);
+                const qrCodeImageUrl = generateQRCode(encryptedData);
+                
+                // Send email
+                await sendEmail(
+                    ticketData.contact,
+                    ticketData.ticketId,
+                    ticketData.name,
+                    ticketData.seats,
+                    ticketData.total,
+                    ticketData.ticketType,
+                    qrCodeImageUrl
+                );
+                
+                showSuccessUI();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error processing your ticket: ' + error.message);
+                window.location.href = '/buy.html';
+            }
+        });
+
+        function showSuccessUI() {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('success-message').style.display = 'block';
+        }
+
+        // Your existing encrypt(), generateQRCode(), and sendEmail() functions here
+        function encrypt(ticketData) {
+            const AES_KEY = 'Wagasenevi123456';
+            const key = CryptoJS.enc.Utf8.parse(AES_KEY);
+            const plaintext = CryptoJS.enc.Utf8.parse(ticketData);
+
+            const encrypted = CryptoJS.AES.encrypt(plaintext, key, {
+                mode: CryptoJS.mode.ECB,
+                padding: CryptoJS.pad.Pkcs7,
+            });
+
+            return encrypted.toString().replace(/\n/g, '');
+        }
+
+        function generateQRCode(data) {
+            const qr = qrcode(0, 'H');
+            qr.addData(data);
+            qr.make();
+        
+            const size = 250;
+            const margin = 20;
+            const totalSize = size + margin * 2;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = totalSize;
+            canvas.height = totalSize;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, totalSize, totalSize);
+            
+            const moduleCount = qr.getModuleCount();
+            const moduleSize = size / moduleCount;
+            
+            for (let x = 0; x < moduleCount; x++) {
+                for (let y = 0; y < moduleCount; y++) {
+                    const isDark = qr.isDark(x, y);
+                    ctx.fillStyle = isDark ? '#000000' : '#FFFFFF';
+                    ctx.fillRect(
+                        margin + x * moduleSize,
+                        margin + y * moduleSize,
+                        moduleSize,
+                        moduleSize
+                    );
+                }
+            }
+        
+            return canvas.toDataURL('image/png', 1.0);
+        }
+        
+        async function sendEmail(recipientEmail, ticketId, name, seats, total, ticketType, qrCodeBase64) {
+            try {
+                const formData = new FormData();
+                const base64Data = qrCodeBase64.split(',')[1];
+                formData.append('image', base64Data);
+                
+                const uploadResponse = await fetch('https://api.imgbb.com/1/upload?key=fd2ccc747be81c79cc64af5ee7c73d72', {
+                    method: 'POST',
+                    body: formData
+                });
+        
+                if (!uploadResponse.ok) {
+                    throw new Error('Failed to upload QR code');
+                }
+        
+                const uploadData = await uploadResponse.json();
+                const qrCodeUrl = uploadData.data.url;
+        
+                await emailjs.send('service_mqh69bb', 'template_gak2o99', {
+                    recipientEmail: recipientEmail,
+                    us: 'Elyzium Events',
+                    name: name,
+                    email: 'elyziumevents@gmail.com',
+                    ticket_id: ticketId,
+                    seats: seats,
+                    ticket_type: ticketType === 'picnic_mat' ? 'Picnic Mat Seating' : 'Camping Chair Seating',
+                    total: total,
+                    qr_code: qrCodeUrl
+                });
+            } catch (error) {
+                console.error('Error sending email:', error);
+                throw error;
+            }
+        }
+    </script>
+</body>
+</html>

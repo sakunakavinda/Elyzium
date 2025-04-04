@@ -1,11 +1,15 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize EmailJS
     emailjs.init('6Wk6R2DTBHBjcMnEr');
+    
+    // DOM Elements
     const generateQRButton = document.getElementById('generateQRButton');
     const refreshBtn = document.getElementById('refreshBtn');
     const nameInput = document.getElementById('nameInput');
     const seatInput = document.getElementById('seatInput');
     const ticketTypeSelect = document.getElementById('ticketType');
     const contactInput = document.getElementById('contactInput');
+    const contactInputConf = document.getElementById('contactInputConf');
     const qrCodeImage = document.getElementById('qrCodeImage');
     const placeholder = document.getElementById('placeholder');
     const loader = document.getElementById('loader');
@@ -21,8 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
         messagingSenderId: "123407494252",
         appId: "1:123407494252:web:5e496e80e23229aafebc49"
     };
-    
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     
     // Ticket prices
@@ -30,6 +32,10 @@ document.addEventListener('DOMContentLoaded', function () {
         picnic_mat: 1000,
         camping_chair: 1500
     };
+
+    // Track navigation state
+    let isBackNavigation = false;
+    let isInitialLoad = true;
 
     // Initialize subtotal calculation
     function updateSubTotal() {
@@ -40,14 +46,46 @@ document.addEventListener('DOMContentLoaded', function () {
         subTotalElement.textContent = `LKR ${subTotal} /=`;
     }
 
-    // Set up event listeners for changes
+    // Event listeners for form changes
     seatInput.addEventListener('input', updateSubTotal);
     ticketTypeSelect.addEventListener('change', updateSubTotal);
 
-    // Initialize subtotal on page load
-    updateSubTotal();
+    // Show cancellation message
+    function showCancellationMessage() {
+        const existingMessage = document.querySelector('.payment-message');
+        if (existingMessage) existingMessage.remove();
+        
+        const message = document.createElement('div');
+        message.className = 'payment-message';
+        message.innerHTML = `
+            <div style="background: #fff3cd; color: #856404; padding: 10px; 
+                        margin: 0 0 15px 0; border: 1px solid #ffeeba;
+                        border-radius: 4px; animation: fadeIn 0.5s ease-in;">
+                Payment was cancelled. You can review and resubmit your order.
+            </div>
+        `;
+        document.querySelector('form').prepend(message);
+        setTimeout(() => message.remove(), 5000);
+    }
 
-    generateQRButton.addEventListener('click', async function () {
+    // Initialize page
+    function initializePage(fromBackButton = false) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('payment') === 'cancelled') {
+            showCancellationMessage();
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
+        updateSubTotal();
+        
+        if (fromBackButton) {
+            console.log('Handling browser back button navigation');
+            // Add any back-button-specific logic here
+        }
+    }
+
+    // Generate QR Button Click Handler
+    generateQRButton.addEventListener('click', async function() {
         if (status === 1) {
             alert("Generation process already initiated");
             return;
@@ -55,15 +93,22 @@ document.addEventListener('DOMContentLoaded', function () {
     
         status = 1;
     
-        // Validate inputs first
+        // Validate inputs
         const name = nameInput.value.trim();
         const seats = parseInt(seatInput.value.trim());
         const contact = contactInput.value.trim();
+        const contactConf = contactInputConf.value.trim();
         const selectedTicketType = ticketTypeSelect.value;
     
         if (!name || isNaN(seats) || seats <= 0 || !contact) {
             alert('Please fill all details correctly');
             status = 0;
+            return;
+        }
+
+        if (contact != contactConf) {
+            alert('Emails do not match');
+            status = 0;  
             return;
         }
     
@@ -73,61 +118,45 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
     
-        // Calculate total
-        const pricePerTicket = ticketPrices[selectedTicketType];
-        const total = seats * pricePerTicket;
-    
-        // Stripe Price IDs for each ticket type
-        const stripePriceIds = {
-            picnic_mat: 'price_1R9q764ZyAT5oIFLt3qvmW9J', // Replace with your actual Price ID
-            camping_chair: 'price_1R9q7V4ZyAT5oIFLjFmPkEJ2' // Replace with your actual Price ID
-        };
-    
         try {
-            // First initiate Stripe checkout
-            const stripe = Stripe("pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouLjC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ");
-            
-            const { error } = await stripe.redirectToCheckout({
-                lineItems: [{
-                    price: stripePriceIds[selectedTicketType], // Use the correct Price ID
-                    quantity: seats, // Quantity is the number of seats
-                }],
-                mode: 'payment',
-                successUrl: `${window.location.origin}/index.html?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-                cancelUrl: `${window.location.origin}/buy.html?payment=cancelled`,
-            });
-    
-            if (error) {
-                throw new Error(error.message);
-            }
-    
-            // Only proceed with QR generation if Stripe checkout succeeds
             generateQRButton.disabled = true;
             generateQRButton.textContent = 'Processing...';
             loader.style.display = 'flex';
     
             const ticketId = generateTicketId();
-            const ticketData = `${ticketId},${name},${seats},${contact},${selectedTicketType},${total}`;
-            const encryptedData = encrypt(ticketData);
-            const qrCodeImageUrl = generateQRCode(encryptedData);
+            const total = seats * ticketPrices[selectedTicketType];
             
-            await saveToFirestore(ticketId, {
-                contact: contact,
-                name: name,
-                seatCount: seats,
-                ticketId: ticketId,
-                totalPrice: total,
+            const ticketData = {
+                ticketId,
+                name,
+                seats,
+                contact,
                 ticketType: selectedTicketType,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                paymentStatus: 'pending' // Track payment status
+                total
+            };
+            
+            const encodedData = encodeURIComponent(JSON.stringify(ticketData));
+
+            const stripePriceIds = {
+                picnic_mat: 'price_1R9q764ZyAT5oIFLt3qvmW9J',
+                camping_chair: 'price_1R9q7V4ZyAT5oIFLjFmPkEJ2'
+            };
+    
+            const stripe = Stripe("pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouLjC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ");
+            
+            const { error } = await stripe.redirectToCheckout({
+                lineItems: [{
+                    price: stripePriceIds[selectedTicketType],
+                    quantity: seats,
+                }],
+                mode: 'payment',
+                successUrl: `${window.location.origin}/success.html?data=${encodedData}`,
+                cancelUrl: `${window.location.origin}/buy.html?payment=cancelled`,
+                clientReferenceId: ticketId,
             });
-            
-            await sendEmail(contact, ticketId, name, seats, total, selectedTicketType, qrCodeImageUrl);
-            
-            clearInputs();
-            alert('Ticket purchased successfully! Email sent with QR code.');
-            status = 0;
-            
+    
+            if (error) throw error;
+    
         } catch (error) {
             console.error('Error:', error);
             alert('Error processing your request: ' + error.message);
@@ -139,15 +168,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    refreshBtn.addEventListener('click', function () {
+    // Refresh Button Click Handler
+    refreshBtn.addEventListener('click', function() {
         clearInputs();
     });
 
+    // Helper Functions
     function generateTicketId() {
         if (typeof crypto !== 'undefined' && crypto.randomUUID) {
             return crypto.randomUUID().replace(/-/g, '').substring(0, 8);
         } else {
-            return 'xxxxxxxx'.replace(/[xy]/g, function (c) {
+            return 'xxxxxxxx'.replace(/[xy]/g, function(c) {
                 const r = Math.random() * 16 | 0;
                 const v = c === 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
@@ -160,100 +191,11 @@ document.addEventListener('DOMContentLoaded', function () {
         return regex.test(email);
     }
 
-    function encrypt(ticketData) {
-        const AES_KEY = 'Wagasenevi123456';
-        const key = CryptoJS.enc.Utf8.parse(AES_KEY);
-        const plaintext = CryptoJS.enc.Utf8.parse(ticketData);
-
-        const encrypted = CryptoJS.AES.encrypt(plaintext, key, {
-            mode: CryptoJS.mode.ECB,
-            padding: CryptoJS.pad.Pkcs7,
-        });
-
-        return encrypted.toString().replace(/\n/g, '');
-    }
-
-    function generateQRCode(data) {
-        const qr = qrcode(0, 'H');
-        qr.addData(data);
-        qr.make();
-    
-        const size = 250;
-        const margin = 20;
-        const totalSize = size + margin * 2;
-        
-        const canvas = document.createElement('canvas');
-        canvas.width = totalSize;
-        canvas.height = totalSize;
-        const ctx = canvas.getContext('2d');
-        
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, totalSize, totalSize);
-        
-        const moduleCount = qr.getModuleCount();
-        const moduleSize = size / moduleCount;
-        
-        for (let x = 0; x < moduleCount; x++) {
-            for (let y = 0; y < moduleCount; y++) {
-                const isDark = qr.isDark(x, y);
-                ctx.fillStyle = isDark ? '#000000' : '#FFFFFF';
-                ctx.fillRect(
-                    margin + x * moduleSize,
-                    margin + y * moduleSize,
-                    moduleSize,
-                    moduleSize
-                );
-            }
-        }
-    
-        const imageUrl = canvas.toDataURL('image/png', 1.0);
-        
-        placeholder.style.display = 'none';
-        qrCodeImage.src = imageUrl;
-        qrCodeImage.style.display = 'block';
-        
-        return imageUrl;
-    }
-    
-    async function sendEmail(recipientEmail, ticketId, name, seats, total, ticketType, qrCodeBase64) {
-        try {
-            const formData = new FormData();
-            const base64Data = qrCodeBase64.split(',')[1];
-            formData.append('image', base64Data);
-            
-            const uploadResponse = await fetch('https://api.imgbb.com/1/upload?key=fd2ccc747be81c79cc64af5ee7c73d72', {
-                method: 'POST',
-                body: formData
-            });
-    
-            if (!uploadResponse.ok) {
-                throw new Error('Failed to upload QR code');
-            }
-    
-            const uploadData = await uploadResponse.json();
-            const qrCodeUrl = uploadData.data.url;
-    
-            await emailjs.send('service_mqh69bb', 'template_gak2o99', {
-                recipientEmail: recipientEmail,
-                us: 'Elyzium Events',
-                name: name,
-                email: 'elyziumevents@gmail.com',
-                ticket_id: ticketId,
-                seats: seats,
-                ticket_type: ticketType === 'picnic_mat' ? 'Picnic Mat Seating' : 'Camping Chair Seating',
-                total: total,
-                qr_code: qrCodeUrl
-            });
-        } catch (error) {
-            console.error('Error:', error);
-            throw error;
-        }
-    }
-
     function clearInputs() {
         nameInput.value = '';
         seatInput.value = '';
         contactInput.value = '';
+        contactInputConf.value = '';
         ticketTypeSelect.value = 'picnic_mat';
         subTotalElement.textContent = 'LKR 0 /=';
         placeholder.style.display = 'block';
@@ -261,22 +203,19 @@ document.addEventListener('DOMContentLoaded', function () {
         qrCodeImage.src = '';
     }
 
-    
-    
-    // Function to save ticket data to Firestore
-    async function saveToFirestore(ticketId, ticketData) {
-        try {
-            const db = firebase.firestore();
-            await db.collection('tickets').doc(ticketId).set(ticketData);
-            console.log('Ticket saved to Firestore with ID:', ticketId);
-        } catch (error) {
-            console.error('Error saving to Firestore:', error);
-            throw error;
+    // Navigation Detection
+    window.addEventListener('popstate', function() {
+        isBackNavigation = true;
+    });
+
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted || isBackNavigation) {
+            initializePage(true);
+            isBackNavigation = false;
+        } else if (isInitialLoad) {
+            initializePage(false);
+            isInitialLoad = false;
         }
-    }
-
-
- 
-    
-
+    });
 });
+
