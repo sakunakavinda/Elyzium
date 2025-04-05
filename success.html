@@ -9,7 +9,16 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <style>
-        
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px auto;
+            max-width: 500px;
+            text-align: center;
+            border: 1px solid #ef9a9a;
+        }
     </style>
 </head>
 <body>
@@ -38,6 +47,8 @@
         </div>
     </div>
 
+    <div id="error-container" style="display: none;"></div>
+
     <script>
         // Initialize Firebase
         const firebaseConfig = {
@@ -62,59 +73,90 @@
             const ticketId = urlParams.get('ticketId');
             
             if (!ticketId) {
-                window.location.href = './buy.html';
+                showError('Invalid ticket ID. Please try again.');
                 return;
             }
 
             try {
+                // Retrieve temporary data from sessionStorage
+                const pendingTicket = JSON.parse(sessionStorage.getItem('pendingTicket'));
+                
+                if (!pendingTicket || pendingTicket.ticketId !== ticketId) {
+                    throw new Error('Ticket data not found. Please try again.');
+                }
+
                 const db = firebase.firestore();
                 const ticketRef = db.collection('tickets').doc(ticketId);
                 
-                // Check if ticket exists and is paid
+                // Check if ticket already exists (prevent duplicates)
                 const doc = await ticketRef.get();
                 
-                if (!doc.exists) {
-                    throw new Error('Ticket not found');
-                }
-                
-                const ticketData = doc.data();
-                
-                // If already processed, just show the success message
-                if (ticketData.paymentStatus === 'paid') {
-                    showSuccessUI(ticketData);
+                if (doc.exists) {
+                    showSuccessUI(doc.data());
                     return;
                 }
-                
-                // Update payment status to paid
-                await ticketRef.update({
-                    paymentStatus: 'paid',
-                    paidAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                // Generate QR code
-                const qrData = `${ticketData.ticketId},${ticketData.name},${ticketData.seats},${ticketData.contact},${ticketData.ticketType},${ticketData.total}`;
+
+                // Generate QR code first (before any database operations)
+                const qrData = `${ticketId},${pendingTicket.name},${pendingTicket.seats},${pendingTicket.contact},${pendingTicket.ticketType},${pendingTicket.total}`;
                 const encryptedData = encrypt(qrData);
                 const qrCodeImageUrl = generateQRCode(encryptedData);
                 
-                // Send email
+                // Attempt to send email first
                 await sendEmail(
-                    ticketData.contact,
-                    ticketData.ticketId,
-                    ticketData.name,
-                    ticketData.seats,
-                    ticketData.total,
-                    ticketData.ticketType,
+                    pendingTicket.contact,
+                    ticketId,
+                    pendingTicket.name,
+                    pendingTicket.seats,
+                    pendingTicket.total,
+                    pendingTicket.ticketType,
                     qrCodeImageUrl
                 );
+
+                // Only if email was successful, create the database record
+                await ticketRef.set({
+                    ...pendingTicket,
+                    paymentStatus: 'paid',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    paidAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    qrCodeUrl: qrCodeImageUrl // Store QR code URL for reference
+                });
                 
-                showSuccessUI(ticketData);
+                // Clear temporary storage only after both operations succeed
+                sessionStorage.removeItem('pendingTicket');
+                showSuccessUI(pendingTicket);
                 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error processing your ticket: ' + error.message);
-                window.location.href = './buy.html';
+                showError(`AN ERROR HAS OCCURRED! TICKET NOT GENERATED: ${error.message}`);
+                
+                // Attempt to clean up any partial state
+                try {
+                    const db = firebase.firestore();
+                    const ticketRef = db.collection('tickets').doc(ticketId);
+                    const doc = await ticketRef.get();
+                    if (doc.exists) {
+                        await ticketRef.delete();
+                    }
+                } catch (cleanupError) {
+                    console.error('Cleanup failed:', cleanupError);
+                }
             }
         });
+
+        function showError(message) {
+            document.getElementById('loader').style.display = 'none';
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.innerHTML = `
+                <div class="error-message">
+                    <h3>Error Processing Your Ticket</h3>
+                    <p>${message}</p>
+                    <p>Please try again or contact support if the problem persists.</p>
+                    <a href="./buy.html" class="btn">Return to Ticket Purchase</a>
+                    <a href="./report.html" class="btn">Contact support</a>
+                </div>
+            `;
+            errorContainer.style.display = 'block';
+        }
 
         function showSuccessUI(ticketData) {
             document.getElementById('loader').style.display = 'none';
@@ -203,13 +245,13 @@
                 });
         
                 if (!uploadResponse.ok) {
-                    throw new Error('Failed to upload QR code');
+                    throw new Error('Failed to upload QR code to image hosting service');
                 }
         
                 const uploadData = await uploadResponse.json();
                 const qrCodeUrl = uploadData.data.url;
         
-                await emailjs.send('service_mqh69bb', 'template_gak2o99', {
+                const emailResponse = await emailjs.send('service_mqh69bb', 'template_gak2o99', {
                     recipientEmail: recipientEmail,
                     us: 'Elyzium Events',
                     name: name,
@@ -220,9 +262,13 @@
                     total: total,
                     qr_code: qrCodeUrl
                 });
+
+                if (emailResponse.status !== 200) {
+                    throw new Error('Email service returned an error');
+                }
             } catch (error) {
                 console.error('Error sending email:', error);
-                throw error;
+                throw new Error('Failed to send confirmation email: ' + error.message);
             }
         }
     </script>

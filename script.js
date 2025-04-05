@@ -141,13 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 total
             };
             
-            // Save to Firestore first (as pending)
-            const db = firebase.firestore();
-            await db.collection('tickets').doc(ticketId).set({
-                ...ticketData,
-                paymentStatus: 'pending',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            sessionStorage.setItem('pendingTicket', JSON.stringify(ticketData));
 
             const stripePriceIds = {
                 picnic_mat: 'price_1R9q764ZyAT5oIFLt3qvmW9J',
@@ -167,11 +161,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 clientReferenceId: ticketId,
             });
     
-            if (error) throw error;
+            if (error) {
+                // Remove the pending ticket if Stripe fails
+                await db.collection('tickets').doc(ticketId).delete();
+                throw error;
+            }
     
         } catch (error) {
             console.error('Error:', error);
             alert('Error processing your request: ' + error.message);
+            //clearInputs();
             status = 0;
             generateQRButton.disabled = false;
             generateQRButton.textContent = 'Buy';
