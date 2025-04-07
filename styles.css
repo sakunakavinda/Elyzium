@@ -18,7 +18,7 @@ body {
 
 /* Header Styles */
 header {
-    background-color: #1a4a52;
+    background-color: #0e3030;
     padding: 15px;
     display: flex;
     align-items: center;
@@ -27,9 +27,9 @@ header {
 }
 
 .event-title {
-    font-size: 1.8rem;
+    font-size: 1.2rem;
     font-weight: bold;
-    color: #ecf0f1;
+    color: #ffffff;
     text-transform: uppercase;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: center;
