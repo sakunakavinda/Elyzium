@@ -18,7 +18,7 @@ body {
 
 /* Header Styles */
 header {
-    background-color: #0e3030;
+    background-color: #152828;
     padding: 15px;
     display: flex;
     align-items: center;
@@ -41,6 +41,19 @@ header {
     max-height: 400px;
     object-fit: cover;
     object-position: center;
+    animation: zoomIn 1s ease-out;
+    transform-origin: center center;
+}
+
+@keyframes zoomIn {
+    0% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .event-details {
