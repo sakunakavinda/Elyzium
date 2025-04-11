@@ -39,6 +39,17 @@ document.addEventListener('DOMContentLoaded', function() {
         camping_chair: 1500
     };
 
+
+    // Check internet connection
+    async function checkInternetConnection() {
+        try {
+            await firebase.firestore().collection('connectivityCheck').doc('ping').get({ source: 'server' });
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
     // Initialize subtotal calculation
     function updateSubTotal() {
         const seats = parseInt(seatInput.value.trim()) || 0;
@@ -56,34 +67,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    // Show cancellation message
-    function showCancellationMessage() {
-        const existingMessage = document.querySelector('.payment-message');
-        if (existingMessage) existingMessage.remove();
-        
-        const message = document.createElement('div');
-        message.className = 'payment-message';
-        message.innerHTML = `
-            <div style="background: #fff3cd; color: #856404; padding: 10px; 
-                        margin: 0 0 15px 0; border: 1px solid #ffeeba;
-                        border-radius: 4px; animation: fadeIn 0.5s ease-in;">
-                Payment was cancelled. You can review and resubmit your order.
-            </div>
-        `;
-        document.querySelector('form').prepend(message);
-        setTimeout(() => message.remove(), 5000);
-    }
-
     // Initialize page
     function initializePage() {
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+                // Recalculate subtotal when coming back using browser's back button
+                clearInputs();
+                updateSubTotal();
+            } else {
+                clearInputs();
+            }
+        });
+    
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('payment') === 'cancelled') {
             showCancellationMessage();
-            // Clean the URL
             window.history.replaceState({}, document.title, window.location.pathname);
         }
-        
-        updateSubTotal();
     }
 
     // Generate QR Button Click Handler
@@ -92,43 +92,56 @@ document.addEventListener('DOMContentLoaded', function() {
             alert("Generation process already initiated");
             return;
         }
-
         
-    
-        status = 1;
-    
-        // Validate inputs
-        const name = nameInput.value.trim();
-        const seats = parseInt(seatInput.value.trim());
-        const contact = contactInput.value.trim();
-        const contactConf = contactInputConf.value.trim();
-        const selectedTicketType = ticketTypeSelect.value;
-    
-        if (!name || isNaN(seats) || seats <= 0 || !contact) {
-            alert('Please fill all details correctly');
-            status = 0;
-            return;
-        }
-
-        if (contact !== contactConf) {
-            alert('Emails do not match');
-            status = 0;  
-            return;
-        }
-    
-        if (!validateEmail(contact)) {
-            alert('Please enter a valid email address');
-            status = 0;
-            return;
-        }
-    
         try {
-            qrCodeImage.style.display = 'flex'
-            placeholder.style.display = 'none'
-            generateQRButton.disabled = true;
+            // Check internet connection first
+            const isOnline = await checkInternetConnection();
+            if (!isOnline) {
+                alert('No internet connection');
+                generateQRButton.disabled = false;
+                generateQRButton.textContent = 'Buy';
+                return;
+            }
+            
+            status = 1;
+        
+            // Validate inputs
+            const name = nameInput.value.trim();
+            const seats = parseInt(seatInput.value.trim());
+            const contact = contactInput.value.trim();
+            const contactConf = contactInputConf.value.trim();
+            const selectedTicketType = ticketTypeSelect.value;
+        
+            if (!name || isNaN(seats) || seats <= 0 || !contact) {
+                alert('Please fill all details correctly');
+                status = 0;
+                generateQRButton.disabled = false;
+                generateQRButton.textContent = 'Buy';
+                return;
+            }
+
+            if (contact !== contactConf) {
+                alert('Emails do not match');
+                status = 0;
+                generateQRButton.disabled = false;
+                generateQRButton.textContent = 'Buy';
+                return;
+            }
+        
+            if (!validateEmail(contact)) {
+                alert('Please enter a valid email address');
+                status = 0;
+                generateQRButton.disabled = false;
+                generateQRButton.textContent = 'Buy';
+                return;
+            }
+        
+            // Proceed with payment
+            qrCodeImage.style.display = 'flex';
+            placeholder.style.display = 'none';
             generateQRButton.textContent = 'Processing...';
             loader.style.display = 'flex';
-    
+        
             const ticketId = generateTicketId();
             const total = seats * ticketPrices[selectedTicketType];
             
@@ -147,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 picnic_mat: 'price_1R9q764ZyAT5oIFLt3qvmW9J',
                 camping_chair: 'price_1R9q7V4ZyAT5oIFLjFmPkEJ2'
             };
-    
+        
             const stripe = Stripe("pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouLjC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ");
             
             const { error } = await stripe.redirectToCheckout({
@@ -160,17 +173,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 cancelUrl: `${window.location.origin}/buy.html?payment=cancelled`,
                 clientReferenceId: ticketId,
             });
-    
+        
             if (error) {
-                // Remove the pending ticket if Stripe fails
-                await db.collection('tickets').doc(ticketId).delete();
                 throw error;
             }
-    
+        
         } catch (error) {
             console.error('Error:', error);
-            alert('Error processing your request: ' + error.message);
-            //clearInputs();
+            showErrorMessage('Error processing your request: ' + (error.message || 'Please try again later'));
             status = 0;
             generateQRButton.disabled = false;
             generateQRButton.textContent = 'Buy';
@@ -217,6 +227,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize the page
     initializePage();
-
-
 });
