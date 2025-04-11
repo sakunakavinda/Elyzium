@@ -74,10 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Recalculate subtotal when coming back using browser's back button
                 clearInputs();
                 updateSubTotal();
+                loader.style.display = 'none';
                 status=0;
                 generateQRButton.disabled = false;
                 generateQRButton.textContent = 'Buy';
-                loader.style.display= 'none';
             } else {
                 clearInputs();
             }
