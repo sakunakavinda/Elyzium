@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 status=0;
                 generateQRButton.disabled = false;
                 generateQRButton.textContent = 'Buy';
+                loader.disabled = true;
             } else {
                 clearInputs();
             }
