@@ -165,6 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         
             const stripe = Stripe("pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouLjC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ");
+            const baseUrl = 'https://sakunakavinda.github.io/Elyzium';
             
             
             const { error } = await stripe.redirectToCheckout({
@@ -173,8 +174,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     quantity: seats,
                 }],
                 mode: 'payment',
-                successUrl: `${window.location.origin}/success.html?ticketId=${ticketId}`,
-                cancelUrl: `${window.location.origin}/buy.html?payment=cancelled`,
+                successUrl: `${baseUrl}/success.html?ticketId=${ticketId}`,
+                 cancelUrl: `${baseUrl}/buy.html?payment=cancelled`,
                 clientReferenceId: ticketId,
             });
         
