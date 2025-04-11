@@ -18,45 +18,22 @@ body {
 
 /* Header Styles */
 header {
-    background-color: #f3f3f3;
-    padding: 3px;
+    background-color: #ffffff;
+    padding: 5px;
     display: flex;
     align-items: center;
-    justify-content: left;
+    justify-content: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    flex-wrap: wrap;
 }
 
 .event-title {
-    font-size: clamp(0.9rem, 3vw, 1.8rem); /* Fluid typography */
+    font-size: 1rem;
     font-weight: bold;
     color: #000000;
     text-transform: uppercase;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-grow: 1; /* Allow title to take available space */
-    text-align: left; /* Align left to match logo */
+    text-align: center;
 }
-
-.logo{
-
-    height: auto;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.logo img {
-    height: clamp(2.5rem, 6vw, 4.5rem); /* Responsive sizing with min/max */
-    width: auto;
-    max-height: 80px;
-    object-fit: contain;
-    transition: all 0.3s ease;
-}
-
 
 .cover-image img {
     width: 100%;
@@ -64,7 +41,7 @@ header {
     max-height: 400px;
     object-fit: cover;
     object-position: center;
-    animation: zoomIn 1s ease-out;
+    animation: zoomIn 3s ease-out;
     transform-origin: center center;
 }
 
@@ -449,11 +426,8 @@ justify-content: center;
 
 /* Media Queries for Responsiveness */
 @media (min-width: 768px) {
-    .logo img {
-        height: 4em;
-    }
     .event-title {
-        font-size: 1.5rem;
+        font-size: 2rem;
     }
 
     .event-details {
@@ -519,14 +493,6 @@ justify-content: center;
 }
 
 @media (min-width: 992px) {
-
-    .logo img {
-        height: 4.5em;
-    }
-    .event-title {
-        font-size: 1.8rem;
-    }
-
     .event-details {
         max-width: 70%;
     }
@@ -541,12 +507,10 @@ justify-content: center;
 }
 
 @media (max-width: 480px) {
-    .logo img {
-        height: 3.5em;
-    }
     .event-title {
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
+
     .details h1 {
         font-size: 1.5rem;
     }
@@ -727,10 +691,6 @@ justify-content: center;
 @media (min-width: 768px) {
     .container {
         padding: 2em;
-    }
-
-    .logo img {
-        height: 4em;
     }
     
     .container h1 {
