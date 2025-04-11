@@ -141,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         
             // Proceed with payment
+            qrCodeImage.src = "images/qr.png";
             qrCodeImage.style.display = 'flex';
             placeholder.style.display = 'none';
             generateQRButton.textContent = 'Processing...';
