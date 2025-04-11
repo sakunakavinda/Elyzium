@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         
             const stripe = Stripe("pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouLjC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ");
-            const repoPath = "/Elyzium";
+            const repoPath = "sakunakavinda/Elyzium";
             
             const { error } = await stripe.redirectToCheckout({
                 lineItems: [{
