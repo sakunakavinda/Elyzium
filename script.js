@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         
             // Proceed with payment
-            qrCodeImage.src = "https://sakunakavinda.github.io/Elyzium/images/qr.png";
+            qrCodeImage.src = "images/qr.png";
             qrCodeImage.style.display = 'flex';
             placeholder.style.display = 'none';
             generateQRButton.textContent = 'Processing...';
