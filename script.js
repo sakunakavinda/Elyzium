@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     quantity: seats,
                 }],
                 mode: 'payment',
-                successUrl: `${window.location.origin}/success.html?ticketId=${ticketId}`,
+                successUrl: `${window.location.origin}/Elyzium/success.html?ticketId=${ticketId}`,
                 cancelUrl: `${window.location.origin}/buy.html?payment=cancelled`,
                 clientReferenceId: ticketId,
             });
