@@ -146,11 +146,11 @@ header {
 }
 
 #buyTicketsBtn {
-    background-color: #27ae60;
+    background-color: #107070;
     color: white;
     border: none;
     padding: 12px 24px;
-    border-radius: 5px;
+    border-radius: 30px;
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s ease;
@@ -163,7 +163,7 @@ header {
 #reportBtn{
     background-color: #27ae60; 
     border: none;
-    border-radius: 5px;
+    border-radius: 30px;
     color: white;
     transition: background-color 0.3s ease;
     font-size: 1rem;
@@ -179,7 +179,7 @@ header {
 }
 
 #buyTicketsBtn:hover {
-    background-color: #219653;
+    background-color:#0c4e4e;
 }
 
 #reportBtn:hover {
@@ -295,7 +295,7 @@ justify-content: center;
 .buttons button {
     padding: 10px;
     border: none;
-    border-radius: 5px;
+    border-radius: 30px;
     background-color: #027476;
     color: white;
     cursor: pointer;
