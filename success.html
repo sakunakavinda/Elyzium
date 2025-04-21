@@ -102,15 +102,15 @@
                 const qrCodeImageUrl = generateQRCode(encryptedData);
                 
                 // Attempt to send email first
-                await sendEmail(
-                    pendingTicket.contact,
-                    ticketId,
-                    pendingTicket.name,
-                    pendingTicket.seats,
-                    pendingTicket.total,
-                    pendingTicket.ticketType,
-                    qrCodeImageUrl
-                );
+            await sendEmail(
+            pendingTicket.contact,
+            ticketId,
+            pendingTicket.name,
+            (pendingTicket.picnicCount || 0) + (pendingTicket.campingCount || 0),
+            pendingTicket.total,
+            pendingTicket,  // Pass the entire ticket data object instead of just ticketType
+            qrCodeImageUrl
+);
 
                 // Only if email was successful, create the database record
                 await ticketRef.set({
@@ -168,7 +168,8 @@
                 <p><strong>Ticket ID:</strong> ${ticketData.ticketId}</p>
                 <p><strong>Name:</strong> ${ticketData.name}</p>
                 <p><strong>Seats:</strong> ${ticketData.seats}</p>
-                <p><strong>Ticket Type:</strong> ${ticketData.ticketType === 'picnic_mat' ? 'Picnic Mat' : 'Camping Chair'}</p>
+                ${ticketData.picnicCount > 0 ? `<p><strong>Picnic Mats:</strong> ${ticketData.picnicCount}</p>` : ''}
+                ${ticketData.campingCount > 0 ? `<p><strong>Camping Chairs:</strong> ${ticketData.campingCount}</p>` : ''}
                 <p><strong>Total:</strong> LKR ${ticketData.total} /=</p>
             `;
             
@@ -230,47 +231,58 @@
             return canvas.toDataURL('image/png', 1.0);
         }
         
-        async function sendEmail(recipientEmail, ticketId, name, seats, total, ticketType, qrCodeBase64) {
-            try {
-                // Convert base64 to blob for upload
-                const base64Response = await fetch(qrCodeBase64);
-                const blob = await base64Response.blob();
-                
-                const formData = new FormData();
-                formData.append('image', blob, 'qr-code.png');
-                
-                const uploadResponse = await fetch('https://api.imgbb.com/1/upload?key=fd2ccc747be81c79cc64af5ee7c73d72', {
-                    method: 'POST',
-                    body: formData
-                });
+        async function sendEmail(recipientEmail, ticketId, name, seats, total, ticketData, qrCodeBase64) {
+    try {
+        // Convert base64 to blob for upload
+        const response = await fetch(qrCodeBase64);
+        const blob = await response.blob();
         
-                if (!uploadResponse.ok) {
-                    throw new Error('Failed to upload QR code to image hosting service');
-                }
+        const formData = new FormData();
+        formData.append('image', blob, 'qr-code.png');
         
-                const uploadData = await uploadResponse.json();
-                const qrCodeUrl = uploadData.data.url;
-        
-                const emailResponse = await emailjs.send('service_mqh69bb', 'template_gak2o99', {
-                    recipientEmail: recipientEmail,
-                    us: 'Elyzium Events',
-                    name: name,
-                    email: 'elyziumevents@gmail.com',
-                    ticket_id: ticketId,
-                    seats: seats,
-                    ticket_type: ticketType === 'picnic_mat' ? 'Picnic Mat Seating' : 'Camping Chair Seating',
-                    total: total,
-                    qr_code: qrCodeUrl
-                });
+        const uploadResponse = await fetch('https://api.imgbb.com/1/upload?key=fd2ccc747be81c79cc64af5ee7c73d72', {
+            method: 'POST',
+            body: formData
+        });
 
-                if (emailResponse.status !== 200) {
-                    throw new Error('Email service returned an error');
-                }
-            } catch (error) {
-                console.error('Error sending email:', error);
-                throw new Error('Failed to send confirmation email: ' + error.message);
-            }
+        if (!uploadResponse.ok) {
+            throw new Error('Failed to upload QR code');
         }
+
+        const uploadData = await uploadResponse.json();
+        const qrCodeUrl = uploadData.data.url;
+
+        // Create ticket type details
+        const ticketTypes = [];
+        if (ticketData.picnicCount > 0) {
+            ticketTypes.push(`Picnic Mat: ${ticketData.picnicCount}`);
+        }
+        if (ticketData.campingCount > 0) {
+            ticketTypes.push(`Camping Chair: ${ticketData.campingCount}`);
+        }
+
+        const emailResponse = await emailjs.send('service_mqh69bb', 'template_gak2o99', {
+            recipientEmail: recipientEmail,
+            us: 'Elyzium Events',
+            name: name,
+            email: 'elyziumevents@gmail.com',
+            ticket_id: ticketId,
+            seats: seats,
+            ticket_types: ticketTypes.join(', '),  // Changed from ticket_type to ticket_types
+            total: total,
+            qr_code: qrCodeUrl,
+            picnic_count: ticketData.picnicCount || 0,
+            camping_count: ticketData.campingCount || 0
+        });
+
+        if (emailResponse.status !== 200) {
+            throw new Error('Email service returned an error');
+        }
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
+}   
     </script>
 </body>
 </html>

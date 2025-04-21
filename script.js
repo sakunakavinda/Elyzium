@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const generateQRButton = document.getElementById('generateQRButton');
     const refreshBtn = document.getElementById('refreshBtn');
     const nameInput = document.getElementById('nameInput');
-    const seatInput = document.getElementById('seatInput');
-    const ticketTypeSelect = document.getElementById('ticketType');
+    const picnicMatCount = document.getElementById('picnicMatCount');
+    const campingChairCount = document.getElementById('campingChairCount');
     const contactInput = document.getElementById('contactInput');
     const contactInputConf = document.getElementById('contactInputConf');
     const qrCodeImage = document.getElementById('qrCodeImage');
@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
         camping_chair: 1500
     };
 
-
     // Check internet connection
     async function checkInternetConnection() {
         try {
@@ -50,32 +49,45 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initialize subtotal calculation
+    // Update subtotal when ticket counts change
     function updateSubTotal() {
-        const seats = parseInt(seatInput.value.trim()) || 0;
-        const selectedTicketType = ticketTypeSelect.value;
-        const pricePerTicket = ticketPrices[selectedTicketType];
-        const subTotal = seats * pricePerTicket;
+        const picnicCount = parseInt(picnicMatCount.value) || 0;
+        const campingCount = parseInt(campingChairCount.value) || 0;
+        const subTotal = (picnicCount * ticketPrices.picnic_mat) + (campingCount * ticketPrices.camping_chair);
         subTotalElement.textContent = `LKR ${subTotal} /=`;
     }
 
-    // Event listeners for form changes
-    seatInput.addEventListener('input', updateSubTotal);
-    ticketTypeSelect.addEventListener('change', updateSubTotal);
+    // Event listeners for counter buttons
+    document.querySelectorAll('.counter-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const type = this.getAttribute('data-type');
+            const isPlus = this.classList.contains('plus');
+            const inputField = type === 'picnic_mat' ? picnicMatCount : campingChairCount;
+            let value = parseInt(inputField.value) || 0;
+            
+            if (isPlus) {
+                value++;
+            } else {
+                value = Math.max(0, value - 1);
+            }
+            
+            inputField.value = value;
+            updateSubTotal();
+        });
+    });
+
     title.addEventListener('click', function() {
         window.location.href = './index.html';
     });
-
 
     // Initialize page
     function initializePage() {
         window.addEventListener('pageshow', function (event) {
             if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
-                // Recalculate subtotal when coming back using browser's back button
                 clearInputs();
                 updateSubTotal();
                 loader.style.display = 'none';
-                status=0;
+                status = 0;
                 generateQRButton.disabled = false;
                 generateQRButton.textContent = 'Buy';
             } else {
@@ -111,13 +123,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
             // Validate inputs
             const name = nameInput.value.trim();
-            const seats = parseInt(seatInput.value.trim());
+            const picnicCount = parseInt(picnicMatCount.value) || 0;
+            const campingCount = parseInt(campingChairCount.value) || 0;
             const contact = contactInput.value.trim();
             const contactConf = contactInputConf.value.trim();
-            const selectedTicketType = ticketTypeSelect.value;
         
-            if (!name || isNaN(seats) || seats <= 0 || !contact) {
-                alert('Please fill all details correctly');
+            if (!name || (picnicCount === 0 && campingCount === 0) || !contact) {
+                alert('Please fill all details correctly and select at least one ticket');
                 status = 0;
                 generateQRButton.disabled = false;
                 generateQRButton.textContent = 'Buy';
@@ -148,18 +160,23 @@ document.addEventListener('DOMContentLoaded', function() {
             loader.style.display = 'flex';
         
             const ticketId = generateTicketId();
-            const total = seats * ticketPrices[selectedTicketType];
+            const total = (picnicCount * ticketPrices.picnic_mat) + (campingCount * ticketPrices.camping_chair);
             
+            // Store ticket data in sessionStorage (persists only for this session)
             const ticketData = {
                 ticketId,
                 name,
-                seats,
+                seats: picnicCount + campingCount,
                 contact,
-                ticketType: selectedTicketType,
-                total
+                picnicCount: picnicCount,
+                campingCount: campingCount,
+                total,
+                timestamp: new Date().toISOString()
             };
             
+            // Store in sessionStorage with consistent key
             sessionStorage.setItem('pendingTicket', JSON.stringify(ticketData));
+            sessionStorage.setItem(`ticket_${ticketId}`, JSON.stringify(ticketData));
 
             const stripePriceIds = {
                 picnic_mat: 'price_1R9q764ZyAT5oIFLt3qvmW9J',
@@ -167,17 +184,28 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         
             const stripe = Stripe("pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouLjC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ");
-            const baseUrl = 'https://sakunakavinda.github.io/Elyzium';
+            const baseUrl = window.location.origin;
             
+            // Create line items for each ticket type if count > 0
+            const lineItems = [];
+            if (picnicCount > 0) {
+                lineItems.push({
+                    price: stripePriceIds.picnic_mat,
+                    quantity: picnicCount
+                });
+            }
+            if (campingCount > 0) {
+                lineItems.push({
+                    price: stripePriceIds.camping_chair,
+                    quantity: campingCount
+                });
+            }
             
             const { error } = await stripe.redirectToCheckout({
-                lineItems: [{
-                    price: stripePriceIds[selectedTicketType],
-                    quantity: seats,
-                }],
+                lineItems: lineItems,
                 mode: 'payment',
                 successUrl: `${baseUrl}/success.html?ticketId=${ticketId}`,
-                 cancelUrl: `${baseUrl}/buy.html?payment=cancelled`,
+                cancelUrl: `${baseUrl}/buy.html?payment=cancelled`,
                 clientReferenceId: ticketId,
             });
         
@@ -220,10 +248,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function clearInputs() {
         nameInput.value = '';
-        seatInput.value = '';
+        picnicMatCount.value = 0;
+        campingChairCount.value = 0;
         contactInput.value = '';
         contactInputConf.value = '';
-        ticketTypeSelect.value = 'picnic_mat';
         subTotalElement.textContent = 'LKR 0 /=';
         if (placeholder) placeholder.style.display = 'block';
         if (qrCodeImage) {
@@ -232,6 +260,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function showCancellationMessage() {
+        alert('Payment was cancelled. Please try again if you wish to complete your purchase.');
+    }
+
+    function showErrorMessage(message) {
+        alert(message);
+    }
+
     // Initialize the page
     initializePage();
+    updateSubTotal(); // Initialize subtotal on page load
 });

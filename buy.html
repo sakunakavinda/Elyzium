@@ -45,23 +45,35 @@
                 <label for="nameInput">Name:</label>
                 <input type="text" id="nameInput" placeholder="Enter your name">
             </div>
-            <div class="form-group">
-                <label for="seatInput">Number of Seats:</label>
-                <input type="number" id="seatInput" placeholder="Enter number of seats" min="1">
+            
+            <!-- Picnic Mat Ticket Counter -->
+            <div class="ticket-counter">
+                <label for="picnicMatCount">Picnic Mat Seating</label>
+                <div class="counter-controls">
+                    <button class="counter-btn minus" data-type="picnic_mat">-</button>
+                    <input type="number" id="picnicMatCount" class="counter-value" value="0" min="0" readonly>
+                    <button class="counter-btn plus" data-type="picnic_mat">+</button>
+                    <span class="ticket-price">1000 LKR</span>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="ticketType">Ticket Type:</label>
-                <select id="ticketType" class="form-control">
-                    <option value="picnic_mat">Picnic Mat Seating - 1000 LKR</option>
-                    <option value="camping_chair">Camping Chair Seating - 1500 LKR</option>
-                </select>
+            
+            <!-- Camping Chair Ticket Counter -->
+            <div class="ticket-counter">
+                <label for="campingChairCount">Camping Chair Seating</label>
+                <div class="counter-controls">
+                    <button class="counter-btn minus" data-type="camping_chair">-</button>
+                    <input type="number" id="campingChairCount" class="counter-value" value="0" min="0" readonly>
+                    <button class="counter-btn plus" data-type="camping_chair">+</button>
+                    <span class="ticket-price">1500 LKR</span>
+                </div>
             </div>
+            
             <div class="form-group">
                 <label for="contactInput">Email:</label>
                 <input type="email" id="contactInput" placeholder="Enter your email">
             </div>
             <div class="form-group">
-                <label for="contactInputConf">Email:</label>
+                <label for="contactInputConf">Confirm Email:</label>
                 <input type="email" id="contactInputConf" placeholder="Confirm your email">
             </div>
             <div class="display">
@@ -82,7 +94,6 @@
 
 
             <div class="loader" id="loader">
-
                 <span class="load"></span>
             </div>
         </div>
@@ -112,6 +123,7 @@
             </div>
         </div>
     </footer>
+
 </body>
 
 </html>
