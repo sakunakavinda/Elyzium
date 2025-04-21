@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         
             const stripe = Stripe("pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouLjC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ");
-            const baseUrl = window.location.origin;
+            const baseUrl = 'https://sakunakavinda.github.io/Elyzium';
             
             // Create line items for each ticket type if count > 0
             const lineItems = [];
