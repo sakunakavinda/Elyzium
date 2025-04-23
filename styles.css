@@ -365,17 +365,19 @@ justify-content: center;
     display: flex;
     align-items: center;
     margin-bottom: 15px;
-    justify-content: space-between;
+    justify-content: left;
 }
 
 .ticket-counter label {
+    display: flex;
     flex: 1;
-    
+    justify-content: flex-start;
 }
 
 .counter-controls {
     display: flex;
     align-items: center;
+    margin-left:75px;
 }
 
 .counter-btn {
@@ -699,7 +701,7 @@ justify-content: center;
     color: white;
     border: none;
     padding: 12px 24px;
-    border-radius: 5px;
+    border-radius: 30px;
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s ease;
@@ -715,37 +717,38 @@ justify-content: center;
     cursor: not-allowed;
 }
 
-#successMessage {
+.hidden {
     display: none;
-    background-color: white;
+}
+
+#successMessage {
+    background-color: #f8f9fa;
+    border: 1px solid #28a745;
+    border-radius: 5px;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 99, 71, 0.2);
-    margin: 20px auto;
-    max-width: 500px;
+    margin-top: 20px;
     text-align: center;
 }
 
 #successMessage p {
-    color: #27ae60;
-    font-size: 1rem;
+    color: #28a745;
+    font-size: 1.1rem;
     margin-bottom: 15px;
 }
 
 #newSubmission {
-    background-color: #3498db;
+    background-color: #03634b;
     color: white;
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
+    border-radius: 30px;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.3s ease;
-    width: 100%;
+    transition: background-color 0.3s;
 }
 
 #newSubmission:hover {
-    background-color: #2980b9;
+    background-color: #05807a;
 }
 
 /* File input styling to match other inputs */

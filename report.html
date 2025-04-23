@@ -9,7 +9,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="script.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
     <header>
@@ -57,11 +57,11 @@
         
         <div id="successMessage" class="hidden">
             <p>✅ Thank you! Your feedback has been submitted.</p>
-            <button id="newSubmission">Submit Another</button>
+            <button id="newSubmission" onclick="window.location.href='report.html'">Submit Another</button>
         </div>
     </div>
 
-    <script src="app.js"></script>
+   
     <footer>
         <div class="contact-details">
             <p><strong>Contact Us:</strong></p>
@@ -87,5 +87,106 @@
             </div>
         </div>
     </footer>
-</body>
+                        <script>
+
+                        
+
+                            document.addEventListener('DOMContentLoaded', function() {
+                        // Initialize EmailJS with your User ID
+                        emailjs.init('6Wk6R2DTBHBjcMnEr'); // Replace with your actual EmailJS User ID
+
+                        async function checkInternetConnection() {
+                        try {
+                            await firebase.firestore().collection('connectivityCheck').doc('ping').get({ source: 'server' });
+                            return true;
+                        } catch (e) {
+                            return false;
+                        }
+                      }
+
+                        const form = document.querySelector('.container');
+                        const submitBtn = document.getElementById('submitBtn');
+                        const successMessage = document.getElementById('successMessage');
+                        const newSubmissionBtn = document.getElementById('newSubmission');
+                        const title = document.getElementById('event-title');
+
+                        title.addEventListener('click', function() {
+                                window.location.href = './index.html';
+                            });
+
+                        submitBtn.addEventListener('click', function(e) {
+
+                        const isOnline = checkInternetConnection();
+                        if (!isOnline) {
+                            alert('No internet connection');
+                            return;
+                        }
+
+                            e.preventDefault();
+                            
+                            // Validate required fields
+                            const type = document.getElementById('type').value;
+                            const message = document.getElementById('message').value;
+                            
+                            if (!type || !message) {
+                                alert('Please fill in all required fields (Type and Description)');
+                                return;
+                            }
+
+                            // Show loading state
+                            submitBtn.disabled = true;
+                            submitBtn.textContent = 'Sending...';
+
+                            // Get form data
+                            const name = document.getElementById('name').value || 'Anonymous Sender';
+                            const email = document.getElementById('email').value || 'Not provided';
+                            const screenshot = document.getElementById('screenshot').files[0];
+
+                            // Prepare email parameters
+                            const templateParams = {
+                                from_name: name,
+                                from_email: email,
+                                type: type === 'bug' ? 'Bug Report' : 'Feature Suggestion',
+                                message: message,
+                                screenshot_info: screenshot ? 'Screenshot attached' : 'No screenshot provided'
+                            };
+
+                            // Send email using EmailJS
+                            emailjs.send('service_mqh69bb', 'template_pmn9e1o', templateParams)
+                                .then(function(response) {
+                                    console.log('SUCCESS!', response.status, response.text);
+                                    
+                                    // Show success message
+                                    form.style.display = 'block';
+                                    submitBtn.style.display = 'none';
+                                    successMessage.classList.remove('hidden');
+                                    
+                                    // If there's a screenshot, we would typically upload it to a server
+                                    // but EmailJS doesn't handle file attachments directly
+                                    // You would need additional backend code for that
+                                })
+                                .catch(function(error) {
+                                    console.log('FAILED...', error);
+                                    alert('Failed to send your feedback. Please try again later.');
+                                })
+                                .finally(function() {
+                                    submitBtn.disabled = false;
+                                    submitBtn.textContent = 'Submit';
+                                });
+                        });
+
+                        // Handle new submission button
+                        document.getElementById('newSubmission').addEventListener('click', function() {
+                            form.style.display = 'block';
+                            successMessage.classList.add('hidden');
+                            form.reset();
+                            
+                        });
+
+
+                        
+
+                    });
+                        </script>
+                    </body>
 </html>
