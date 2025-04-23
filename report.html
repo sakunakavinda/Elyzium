@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,57 +12,59 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
+
 <body>
     <header>
         <div class="logo-container">
             <img src="images/logo.png" alt="Elyzium Events Logo" class="logo">
         </div>
-        <div id="event-title"  class="event-title">
+        <div id="event-title" class="event-title">
             ELYZIUM EVENTS
         </div>
     </header>
     <div class="container">
         <h1>Submit Feedback</h1>
-            <div class="form-group">
-                <label for="name">Your Name (Optional)</label>
-                <input type="text" id="name" placeholder="Name">
-            </div>
-            
-            <div class="form-group">
-                <label for="email">Email (Optional)</label>
-                <input type="email" id="email" placeholder="your@email.com">
-            </div>
-            
-            <div class="form-group">
-                <label for="type">Type</label>
-                <select id="type" required>
-                    <option value="" disabled selected>Select one</option>
-                    <option value="bug">Bug Report</option>
-                    <option value="suggestion">Feature Suggestion</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="message">Description*</label>
-                <textarea id="message" rows="5" required placeholder="Describe the issue or suggestion in detail..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="screenshot">Screenshot (Optional)</label>
-                <input type="file" id="screenshot" accept="image/*">
-            </div>
-            <div class="buttons">
-                <button type="submit" id="submitBtn">Submit</button>
-            </div>
-            
-        
+        <div class="form-group">
+            <label for="name">Your Name (Optional)</label>
+            <input type="text" id="name" placeholder="Name">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email (Optional)</label>
+            <input type="email" id="email" placeholder="your@email.com">
+        </div>
+
+        <div class="form-group">
+            <label for="type">Type</label>
+            <select id="type" required>
+                <option value="" disabled selected>Select one</option>
+                <option value="bug">Bug Report</option>
+                <option value="suggestion">Feature Suggestion</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="message">Description*</label>
+            <textarea id="message" rows="5" required
+                placeholder="Describe the issue or suggestion in detail..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="screenshot">Screenshot (Optional)</label>
+            <input type="file" id="screenshot" accept="image/*">
+        </div>
+        <div class="buttons">
+            <button type="submit" id="submitBtn">Submit</button>
+        </div>
+
+
         <div id="successMessage" class="hidden">
             <p>✅ Thank you! Your feedback has been submitted.</p>
             <button id="newSubmission" onclick="window.location.href='report.html'">Submit Another</button>
         </div>
     </div>
 
-   
+
     <footer>
         <div class="contact-details">
             <p><strong>Contact Us:</strong></p>
@@ -87,106 +90,112 @@
             </div>
         </div>
     </footer>
-                        <script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            emailjs.init('6Wk6R2DTBHBjcMnEr'); // Replace with your actual EmailJS User ID
 
-                        
+            async function checkInternetConnection() {
+                try {
+                    await firebase.firestore().collection('connectivityCheck').doc('ping').get({ source: 'server' });
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
 
-                            document.addEventListener('DOMContentLoaded', function() {
-                        // Initialize EmailJS with your User ID
-                        emailjs.init('6Wk6R2DTBHBjcMnEr'); // Replace with your actual EmailJS User ID
+            const form = document.querySelector('.container');
+            const submitBtn = document.getElementById('submitBtn');
+            const successMessage = document.getElementById('successMessage');
+            const newSubmissionBtn = document.getElementById('newSubmission');
+            const title = document.getElementById('event-title');
 
-                        async function checkInternetConnection() {
-                        try {
-                            await firebase.firestore().collection('connectivityCheck').doc('ping').get({ source: 'server' });
-                            return true;
-                        } catch (e) {
-                            return false;
-                        }
-                      }
+            title.addEventListener('click', function () {
+                window.location.href = './index.html';
+            });
 
-                        const form = document.querySelector('.container');
-                        const submitBtn = document.getElementById('submitBtn');
-                        const successMessage = document.getElementById('successMessage');
-                        const newSubmissionBtn = document.getElementById('newSubmission');
-                        const title = document.getElementById('event-title');
+            submitBtn.addEventListener('click', async function (e) {
+                e.preventDefault();
 
-                        title.addEventListener('click', function() {
-                                window.location.href = './index.html';
-                            });
 
-                        submitBtn.addEventListener('click', function(e) {
+                // Validate required fields
+                const type = document.getElementById('type').value;
+                const message = document.getElementById('message').value;
 
-                        const isOnline = checkInternetConnection();
-                        if (!isOnline) {
-                            alert('No internet connection');
-                            return;
-                        }
+                if (!type || !message) {
+                    alert('Please fill in all required fields (Type and Description)');
+                    return;
+                }
 
-                            e.preventDefault();
-                            
-                            // Validate required fields
-                            const type = document.getElementById('type').value;
-                            const message = document.getElementById('message').value;
-                            
-                            if (!type || !message) {
-                                alert('Please fill in all required fields (Type and Description)');
-                                return;
-                            }
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
 
-                            // Show loading state
-                            submitBtn.disabled = true;
-                            submitBtn.textContent = 'Sending...';
+                const name = document.getElementById('name').value || 'Anonymous Sender';
+                const email = document.getElementById('email').value || 'Not provided';
+                const screenshot = document.getElementById('screenshot').files[0];
 
-                            // Get form data
-                            const name = document.getElementById('name').value || 'Anonymous Sender';
-                            const email = document.getElementById('email').value || 'Not provided';
-                            const screenshot = document.getElementById('screenshot').files[0];
 
-                            // Prepare email parameters
-                            const templateParams = {
-                                from_name: name,
-                                from_email: email,
-                                type: type === 'bug' ? 'Bug Report' : 'Feature Suggestion',
-                                message: message,
-                                screenshot_info: screenshot ? 'Screenshot attached' : 'No screenshot provided'
-                            };
+                let scrshot = '';
+                if (screenshot) {
+                    try {
+                        const formData = new FormData();
+                        formData.append('image', screenshot);
 
-                            // Send email using EmailJS
-                            emailjs.send('service_mqh69bb', 'template_pmn9e1o', templateParams)
-                                .then(function(response) {
-                                    console.log('SUCCESS!', response.status, response.text);
-                                    
-                                    // Show success message
-                                    form.style.display = 'block';
-                                    submitBtn.style.display = 'none';
-                                    successMessage.classList.remove('hidden');
-                                    
-                                    // If there's a screenshot, we would typically upload it to a server
-                                    // but EmailJS doesn't handle file attachments directly
-                                    // You would need additional backend code for that
-                                })
-                                .catch(function(error) {
-                                    console.log('FAILED...', error);
-                                    alert('Failed to send your feedback. Please try again later.');
-                                })
-                                .finally(function() {
-                                    submitBtn.disabled = false;
-                                    submitBtn.textContent = 'Submit';
-                                });
+                        const uploadResponse = await fetch('https://api.imgbb.com/1/upload?key=fd2ccc747be81c79cc64af5ee7c73d72', {
+                            method: 'POST',
+                            body: formData
                         });
 
-                        // Handle new submission button
-                        document.getElementById('newSubmission').addEventListener('click', function() {
-                            form.style.display = 'block';
-                            successMessage.classList.add('hidden');
-                            form.reset();
-                            
-                        });
+                        if (!uploadResponse.ok) {
+                            throw new Error('Failed to upload screenshot');
+                        }
 
+                        const uploadData = await uploadResponse.json();
+                        scrshot = `<img src="${uploadData.data.url}" alt="Screenshot" style="max-width: 100%; height: auto; border: 1px solid #ddd; margin-top: 10px;">`;
+                    } catch (err) {
+                        console.error('Screenshot upload failed:', err);
+                        alert('Screenshot upload failed. Proceeding without it.');
+                    }
+                } else {
+                    scrshot = '<p><em>No image attached with this report</em></p>';
+                }
 
-                        
+                // Prepare email parameters
+                const templateParams = {
+                    from_name: name,
+                    from_email: email,
+                    type: type === 'bug' ? 'Bug Report' : 'Feature Suggestion',
+                    message: message,
+                    date: new Date().toLocaleString(),
+                    screenshot_info: scrshot
+                };
 
+                // Send email using EmailJS
+                emailjs.send('service_mqh69bb', 'template_pmn9e1o', templateParams)
+                    .then(function (response) {
+                        console.log('SUCCESS!', response.status, response.text);
+
+                        form.style.display = 'block';
+                        submitBtn.style.display = 'none';
+                        successMessage.classList.remove('hidden');
+                    })
+                    .catch(function (error) {
+                        console.error('FAILED...', error);
+                        alert('Failed to send your feedback. Please try again later.');
+                    })
+                    .finally(function () {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit';
                     });
-                        </script>
-                    </body>
-</html>
+            });
+
+            newSubmissionBtn.addEventListener('click', function () {
+                form.style.display = 'block';
+                successMessage.classList.add('hidden');
+                form.reset();
+            });
+        });
+    </script>
+</body>
+
+</html>.
