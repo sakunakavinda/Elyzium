@@ -79,7 +79,7 @@
 
             try {
                 // Retrieve temporary data from sessionStorage
-                const pendingTicket = JSON.parse(sessionStorage.getItem('pendingTicket'));
+                const pendingTicket = JSON.parse(localStorage.getItem('pendingTicket'));
                 
                 if (!pendingTicket) {
                     throw new Error('Ticket data not found. Please try again.');
