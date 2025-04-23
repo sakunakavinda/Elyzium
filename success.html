@@ -81,7 +81,7 @@
                 // Retrieve temporary data from sessionStorage
                 const pendingTicket = JSON.parse(sessionStorage.getItem('pendingTicket'));
                 
-                if (!pendingTicket || pendingTicket.ticketId !== ticketId) {
+                if (!pendingTicket) {
                     throw new Error('Ticket data not found. Please try again.');
                 }
 
