@@ -372,6 +372,10 @@ justify-content: center;
     display: flex;
     flex: 1;
     justify-content: flex-start;
+    font-size: 0.80rem; /* Reduced from default size */
+    color: #555; /* Optional: make text slightly darker */
+    margin-right: 10px; /* Add some spacing */
+    white-space: nowrap; /* Prevent text wrapping */
 }
 
 .counter-controls {
