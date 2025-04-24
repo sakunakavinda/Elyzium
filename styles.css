@@ -147,7 +147,7 @@ header {
 }
 
 #buyTicketsBtn {
-    background-color: #107070;
+    background-color:  #038a7c;
     color: white;
     border: none;
     padding: 12px 24px;
@@ -163,7 +163,7 @@ header {
 }
 
 #reportBtn{
-    background-color: #27ae60; 
+    background-color: #27ae5f; 
     border: none;
     border-radius: 30px;
     color: white;
@@ -299,14 +299,14 @@ justify-content: center;
     padding: 10px;
     border: none;
     border-radius: 30px;
-    background-color: #027476;
+    background-color: #038a7c;
     color: white;
     cursor: pointer;
     font-size: 0.9rem;
 }
 
 .buttons button:hover {
-    background-color: #014553;
+    background-color: #026b61;
 }
 
 #qrCodeContainer {
@@ -703,7 +703,7 @@ justify-content: center;
 }
 
 #submitBtn {
-    background-color: #27ae60;
+    background-color: #038a7c;
     color: white;
     border: none;
     padding: 12px 24px;
@@ -715,7 +715,7 @@ justify-content: center;
 }
 
 #submitBtn:hover {
-    background-color: #219653;
+    background-color: #036b61;
 }
 
 #submitBtn:disabled {
