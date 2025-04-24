@@ -154,11 +154,12 @@ header {
     border-radius: 30px;
     cursor: pointer;
     font-size: 1rem;
-    transition: background-color 0.3s ease;
-    width: 100%;
-    max-width: 200px;
+    transition: all 0.3s ease; /* Smooth transition for all properties */
+    width: 180px; /* Fixed initial width */
     margin: 0 auto;
     display: block;
+    white-space: nowrap; /* Prevents text wrapping during expansion */
+    overflow: hidden; /* Ensures content stays clean during animation */
 }
 
 #reportBtn{
@@ -181,6 +182,7 @@ header {
 
 #buyTicketsBtn:hover {
     background-color:#0c4e4e;
+    width: 200px; 
 }
 
 #reportBtn:hover {
