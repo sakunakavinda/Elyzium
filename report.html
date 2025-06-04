@@ -110,7 +110,11 @@
             const title = document.getElementById('event-title');
 
             title.addEventListener('click', function () {
-                window.location.href = './index.html';
+                // First replace current history state with index.html
+                window.history.replaceState({}, '', 'index.html');
+
+                // Then navigate to home.html
+                window.location.href = './home.html';
             });
 
             submitBtn.addEventListener('click', async function (e) {

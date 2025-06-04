@@ -77,7 +77,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     title.addEventListener('click', function () {
-        window.location.href = './home.html';
+        // First replace current history state with index.html
+    window.history.replaceState({}, '', 'index.html');
+    
+    // Then navigate to home.html
+    window.location.href = './home.html';
     });
 
     // Initialize page
