@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Homepage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Header -->
+        <header>
+            <div class="logo-container">
+                <img src="images/logo.png" alt="Elyzium Events Logo" class="logo">
+            </div>
+            <div class="event-title">
+                ELYZIUM EVENTS
+            </div>
+            
+        </header>
+
+        <!-- Cover Image -->
+        <div class="cover-image">
+            <img src="images/cover.png" alt="Event Cover Photo">
+        </div>
+
+        <!-- Event Details -->
+        <main>
+            <section class="event-details">
+                <div class="details">
+
+                    <p class="description">
+                        Join us for an unforgettable evening under the stars! Enjoy a classic movie screening with your
+                        loved ones.
+                    </p>
+                    <div class="info">
+                        <p><strong>Date:</strong> Not scheduled</p>
+                        <p><strong>Time:</strong> Not scheduled</p>
+                        <p><strong>Venue:</strong> Not scheduled</p>
+                        <p><strong>Event By:</strong> Elyzium Events</p>
+                    </div>
+                    <button id="contactDetailsBtn" onclick="window.open('https://wa.me/94716531817')">Contact for more details</button>
+                </div>
+
+                <!-- Ticket Categories -->
+                <div class="ticket-categories">
+                    <h2>Ticket Prices</h2>
+                    <div class="ticket">
+                        <p>Picnic Mat Seating</p>
+                        <p class="price">1000 LKR</p>
+                    </div>
+                    <hr class="ticket-divider"> <!-- Line separator -->
+                    <div class="ticket">
+                        <p>Camping Chair Seating</p>
+                        <p class="price">1500 LKR</p>
+                    </div>
+                    <hr class="ticket-divider"> <!-- Line separator -->
+
+                    <button id="buyTicketsBtn" onclick="window.location.href='buy.html'">Buy Tickets</button>
+
+
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="contact-details">
+            <p><strong>Contact Us:</strong></p>
+            <p>Email: elyziumevent@gmail.com</p>
+            <p>Phone: +94 71 653 1817</p>
+            <div class="social-icons">
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/sakunakavindaa/?next=%2F" target="_blank" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/tadashi.hamada.16940" target="_blank" aria-label="Facebook">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <!-- WhatsApp -->
+                <a href="https://wa.me/94716531817" target="_blank" aria-label="WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <!-- Email -->
+                <a href="mailto:elyziumevent@gmail.com" aria-label="Email">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

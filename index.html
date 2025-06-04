@@ -1,101 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Homepage</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <meta http-equiv="refresh" content="0; url=base.html">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Responsive Home Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .hero-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      width: auto;
+      height: auto;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+      display: none;
+    }
+
+    .video-desktop {
+      display: block;
+    }
+
+    .video-mobile {
+      object-fit: contain;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      transform: none;
+    }
+
+    @media (max-width: 768px) {
+      .video-desktop {
+        display: none;
+      }
+
+      .video-mobile {
+        display: block;
+      }
+    }
+
+    .overlay-content {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: #05686b;
+      color: white;
+      padding: 15px 30px;
+      font-size: 1rem;
+      border: none;
+      text-decoration: none;
+      border-radius: 30px;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #ff3b3b;
+    }
+
+    @media (max-width: 480px) {
+      .btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
 </head>
-
 <body>
-    <div class="wrapper">
-        <!-- Header -->
-        <header>
-            <div class="logo-container">
-                <img src="images/logo.png" alt="Elyzium Events Logo" class="logo">
-            </div>
-            <div class="event-title">
-                ELYZIUM EVENTS
-            </div>
-            
-        </header>
+  <div class="hero-container">
+    <!-- Desktop video -->
+    <video autoplay muted loop playsinline class="background-video video-desktop">
+      <source src="images/video.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
 
-        <!-- Cover Image -->
-        <div class="cover-image">
-            <img src="images/cover.png" alt="Event Cover Photo">
-        </div>
+    <!-- Mobile video -->
+    <video autoplay muted loop playsinline class="background-video video-mobile">
+      <source src="images/video1.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
 
-        <!-- Event Details -->
-        <main>
-            <section class="event-details">
-                <div class="details">
-
-                    <p class="description">
-                        Join us for an unforgettable evening under the stars! Enjoy a classic movie screening with your
-                        loved ones.
-                    </p>
-                    <div class="info">
-                        <p><strong>Date:</strong> Not scheduled</p>
-                        <p><strong>Time:</strong> Not scheduled</p>
-                        <p><strong>Venue:</strong> Not scheduled</p>
-                        <p><strong>Event By:</strong> Elyzium Events</p>
-                    </div>
-                    <button id="contactDetailsBtn" onclick="window.open('https://wa.me/94716531817')">Contact for more details</button>
-                </div>
-
-                <!-- Ticket Categories -->
-                <div class="ticket-categories">
-                    <h2>Ticket Prices</h2>
-                    <div class="ticket">
-                        <p>Picnic Mat Seating</p>
-                        <p class="price">1000 LKR</p>
-                    </div>
-                    <hr class="ticket-divider"> <!-- Line separator -->
-                    <div class="ticket">
-                        <p>Camping Chair Seating</p>
-                        <p class="price">1500 LKR</p>
-                    </div>
-                    <hr class="ticket-divider"> <!-- Line separator -->
-
-                    <button id="buyTicketsBtn" onclick="window.location.href='buy.html'">Buy Tickets</button>
-
-
-                </div>
-            </section>
-        </main>
+    <div class="overlay-content">
+      <a href="#get-started" class="btn" onclick="window.location.href='home.html'">Get Started</a>
     </div>
-
-    <!-- Footer -->
-    <footer>
-        <div class="contact-details">
-            <p><strong>Contact Us:</strong></p>
-            <p>Email: elyziumevent@gmail.com</p>
-            <p>Phone: +94 71 653 1817</p>
-            <div class="social-icons">
-                <!-- Instagram -->
-                <a href="https://www.instagram.com/sakunakavindaa/?next=%2F" target="_blank" aria-label="Instagram">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <!-- Facebook -->
-                <a href="https://www.facebook.com/tadashi.hamada.16940" target="_blank" aria-label="Facebook">
-                    <i class="fab fa-facebook"></i>
-                </a>
-                <!-- WhatsApp -->
-                <a href="https://wa.me/94716531817" target="_blank" aria-label="WhatsApp">
-                    <i class="fab fa-whatsapp"></i>
-                </a>
-                <!-- Email -->
-                <a href="mailto:elyziumevent@gmail.com" aria-label="Email">
-                    <i class="fas fa-envelope"></i>
-                </a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="script.js"></script>
+  </div>
 </body>
-
 </html>
