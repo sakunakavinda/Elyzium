@@ -27,29 +27,20 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
-      object-fit: cover;
-      width: auto;
-      height: auto;
       min-width: 100%;
       min-height: 100%;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
       z-index: -1;
       display: none;
     }
 
+    /* Default: show desktop video */
     .video-desktop {
       display: block;
     }
 
-    .video-mobile {
-      object-fit: contain;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      transform: none;
-    }
-
+    /* Mobile-specific styles */
     @media (max-width: 768px) {
       .video-desktop {
         display: none;
@@ -72,7 +63,7 @@
 
     .btn {
       display: inline-block;
-      background-color: #05686b;
+      background-color: #ff6b6b;
       color: white;
       padding: 15px 30px;
       font-size: 1rem;
@@ -109,8 +100,9 @@
     </video>
 
     <div class="overlay-content">
-      <a href="#get-started" class="btn" onclick="window.location.href='home.html'">Get Started</a>
+      <a href="#get-started" class="btn">Get Started</a>
     </div>
   </div>
 </body>
 </html>
+
