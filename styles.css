@@ -1,13 +1,13 @@
-/* General Styles */
+/* Dark Theme Styles */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    color: #333333;
+    color: #e0e0e0;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background-color: #f9f9f9;
+    background-color: #121212;
 }
 
 .wrapper {
@@ -18,12 +18,12 @@ body {
 
 /* Header Styles */
 header {
-    background-color: #031203;
+    background-color: #0a1a0a;
     padding: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     gap: 15px;
 }
 
@@ -33,14 +33,15 @@ header {
 }
 
 .logo {
-    height: 40px; /* Adjust as needed */
+    height: 40px;
     width: auto;
+    filter: brightness(0.9);
 }
 
 .event-title {
     font-size: 1rem;
     font-weight: bold;
-    color: #f0ebeb;
+    color: #f0f0f0;
     text-transform: uppercase;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-align: center;
@@ -74,9 +75,9 @@ header {
     padding: 20px;
     max-width: 90%;
     margin: 20px auto;
-    background-color: #ffffff;
+    background-color: #1e1e1e;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .details {
@@ -87,102 +88,103 @@ header {
 .details h1 {
     font-size: 1.8rem;
     margin-bottom: 15px;
-    color: #2c3e50;
+    color: #7ab97a;
 }
 
 .description {
     font-size: 1.2rem;
     line-height: 1.6;
     margin-bottom: 20px;
-    color: #555555;
+    color: #b0b0b0;
     font-weight: bold;
 }
 
 .info {
-    background-color: #ffffff;
+    background-color: #252525;
     padding: 10px 15px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 99, 71, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 99, 71, 0.3);
 }
 
 .info p {
     margin: 8px 0;
-    color: #555555;
+    color: #d0d0d0;
     font-size: 1rem;
 }
 
 .info strong {
-    color: #1b8c5b;
+    color: #4caf50;
 }
 
 #contactDetailsBtn {
     display: block;
-            width: 50%;
-            margin: 15px auto 0;
-            padding: 12px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-            text-align: center;
+    width: 50%;
+    margin: 15px auto 0;
+    padding: 12px;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    text-align: center;
 }
 
 #contactDetailsBtn:hover {
-    background-color: #45a049;
+    background-color: #1b5e20;
 }
 
 .ticket-categories {
-    background-color: #d6f9f5;
+    background-color: #1a2e2a;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .ticket-divider {
     border: 0;
     height: 1px;
-    background-color: #ccc;
+    background-color: #444;
     margin: 15px 0;
 }
 
 .ticket-categories h2 {
     margin-bottom: 20px;
-    color: #2c3e50;
+    color: #7ab97a;
     font-size: 1.5rem;
 }
 
 .ticket {
     margin-bottom: 15px;
     font-size: 1rem;
+    color: #d0d0d0;
 }
 
 .ticket .price {
     font-weight: bold;
-    color: #27ae60;
+    color: #4caf50;
 }
 
 #buyTicketsBtn {
-    background-color:  #038a7c;
+    background-color: #00695c;
     color: white;
     border: none;
     padding: 12px 24px;
     border-radius: 30px;
     cursor: pointer;
     font-size: 1rem;
-    transition: all 0.3s ease; /* Smooth transition for all properties */
-    width: 180px; /* Fixed initial width */
+    transition: all 0.3s ease;
+    width: 180px;
     margin: 0 auto;
     display: block;
-    white-space: nowrap; /* Prevents text wrapping during expansion */
-    overflow: hidden; /* Ensures content stays clean during animation */
+    white-space: nowrap;
+    overflow: hidden;
 }
 
-#reportBtn{
-    background-color: #27ae5f; 
+#reportBtn {
+    background-color: #2e7d32;
     border: none;
     border-radius: 30px;
     color: white;
@@ -195,23 +197,24 @@ header {
     margin: 10px auto;
 }
 
-.minorP{
+.minorP {
     font-size: 0.8rem;
+    color: #aaa;
 }
 
 #buyTicketsBtn:hover {
-    background-color:#0c4e4e;
-    width: 200px; 
+    background-color: #004d40;
+    width: 200px;
 }
 
 #reportBtn:hover {
-    background-color: #219653;
+    background-color: #1b5e20;
 }
 
 /* Footer styles */
 footer {
-    background-color: #011313;
-    color: #fff;
+    background-color: #0a1a1a;
+    color: #e0e0e0;
     padding: 20px;
     text-align: center;
 }
@@ -233,30 +236,32 @@ footer {
 }
 
 .social-icons a {
-    color: #fff;
+    color: #e0e0e0;
     font-size: 20px;
     transition: color 0.3s ease;
 }
 
 .social-icons a:hover {
-    color: #0cff9a;
+    color: #4caf50;
 }
 
 /* Buy Page Styles */
 .container {
-    background-color: #f0f0f0;
+    background-color: #1e1e1e;
     padding: 1.5em;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     width: 90%;
     max-width: 500px;
     margin: 1.5em auto;
     text-align: center;
+    color: #e0e0e0;
 }
 
 .container h1 {
     font-size: 1.5rem;
     margin-bottom: 15px;
+    color: #7ab97a;
 }
 
 .form-group {
@@ -268,44 +273,47 @@ footer {
     display: block;
     margin-bottom: 5px;
     font-size: 0.9rem;
+    color: #d0d0d0;
 }
 
 .form-group input {
     width: 100%;
     padding: 8px;
     box-sizing: border-box;
-    border: 1px solid #cccccc;
+    border: 1px solid #444;
     border-radius: 5px;
     font-size: 0.9rem;
+    background-color: #252525;
+    color: #e0e0e0;
 }
 
-/* Add this to your existing CSS */
 #ticketType {
     width: 100%;
     padding: 8px;
     box-sizing: border-box;
-    border: 1px solid #ccc;
+    border: 1px solid #444;
     border-radius: 5px;
     font-size: 0.9rem;
-    background-color: rgb(255, 255, 255);
-    color: #3c3c3c;
-    -webkit-appearance: none; /* Removes default styling on iOS */
-    -moz-appearance: none; /* Removes default styling on Firefox */
-    appearance: none; /* Removes default styling */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-color: #252525;
+    color: #e0e0e0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23e0e0e0' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 8px center;
     background-size: 12px;
     cursor: pointer;
 }
 
-.display{
+.display {
     display: flex;
     flex-direction: row;
-justify-content: center;
+    justify-content: center;
 }
-.display #subtotal{
-    color: #0cbf74;
+
+.display #subtotal {
+    color: #4caf50;
 }
 
 .buttons {
@@ -318,14 +326,14 @@ justify-content: center;
     padding: 10px;
     border: none;
     border-radius: 30px;
-    background-color: #038a7c;
+    background-color: #00695c;
     color: white;
     cursor: pointer;
     font-size: 0.9rem;
 }
 
 .buttons button:hover {
-    background-color: #026b61;
+    background-color: #004d40;
 }
 
 #qrCodeContainer {
@@ -334,9 +342,9 @@ justify-content: center;
     justify-content: center;
     align-items: center;
     min-height: 200px;
-    border: 1px dashed #ccc;
+    border: 1px dashed #444;
     border-radius: 5px;
-    background-color: #f9f9f9;
+    background-color: #252525;
 }
 
 #qrCodeImage {
@@ -360,7 +368,7 @@ justify-content: center;
 }
 
 .load {
-    background-color: #057b79;
+    background-color: #00695c;
     border-radius: 50px;
     display: block;
     height: 16px;
@@ -376,12 +384,10 @@ justify-content: center;
     content: "";
     width: 100%;
     height: 100%;
-    background-color: #67e7ad;
+    background-color: #4caf50;
     border-radius: inherit;
     animation: loading2_713 3.5s ease both infinite;
 }
-
-
 
 .ticket-counter {
     display: flex;
@@ -394,28 +400,29 @@ justify-content: center;
     display: flex;
     flex: 1;
     justify-content: flex-start;
-    font-size: 0.80rem; /* Reduced from default size */
-    color: #555; /* Optional: make text slightly darker */
-    margin-right: 10px; /* Add some spacing */
+    font-size: 0.80rem;
+    color: #d0d0d0;
+    margin-right: 10px;
 }
 
 .counter-controls {
     display: flex;
     align-items: center;
-    margin-left:75px;
+    margin-left: 75px;
 }
 
 .counter-btn {
     width: 30px;
     height: 30px;
-    border: 1px solid #ccc;
-    background-color: #f8f8f8;
+    border: 1px solid #444;
+    background-color: #252525;
     font-size: 16px;
     cursor: pointer;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #e0e0e0;
 }
 
 .counter-value {
@@ -423,21 +430,16 @@ justify-content: center;
     text-align: center;
     margin: 0 10px;
     padding: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #444;
     border-radius: 4px;
+    background-color: #252525;
+    color: #e0e0e0;
 }
 
 .ticket-price {
     margin-left: 10px;
-    color: #666;
+    color: #aaa;
 }
-
-
-
-
-
-
-
 
 @keyframes text_713 {
     0% {
@@ -510,9 +512,8 @@ justify-content: center;
 
 /* Media Queries for Responsiveness */
 @media (min-width: 768px) {
-
     .logo {
-        height: 50px; /* Larger logo on bigger screens */
+        height: 50px;
     }
     .event-title {
         font-size: 2rem;
@@ -596,10 +597,10 @@ justify-content: center;
 
 @media (max-width: 480px) {
     .logo {
-        height: 30px; /* Smaller logo on mobile */
+        height: 30px;
     }
     header {
-        gap: 10px; /* Less space between logo and title on mobile */
+        gap: 10px;
     }
     .event-title {
         font-size: 1rem;
@@ -649,29 +650,23 @@ justify-content: center;
     }
 }
 
-
-
-
-
-
-
-
-/* Report Page Styles - Matched to Main Design */
+/* Report Page Styles - Dark Theme */
 .container {
-    background-color: #f0f0f0;
+    background-color: #1e1e1e;
     padding: 1.5em;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     width: 90%;
     max-width: 500px;
     margin: 1.5em auto;
     text-align: center;
+    color: #e0e0e0;
 }
 
 .container h1 {
     font-size: 1.5rem;
     margin-bottom: 15px;
-    color: #2c3e50;
+    color: #7ab97a;
 }
 
 .form-group {
@@ -683,7 +678,7 @@ justify-content: center;
     display: block;
     margin-bottom: 5px;
     font-size: 0.9rem;
-    color: #2c3e50;
+    color: #d0d0d0;
 }
 
 .form-group input,
@@ -692,10 +687,12 @@ justify-content: center;
     width: 100%;
     padding: 8px;
     box-sizing: border-box;
-    border: 1px solid #cccccc;
+    border: 1px solid #444;
     border-radius: 5px;
     font-size: 0.9rem;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #252525;
+    color: #e0e0e0;
 }
 
 .form-group textarea {
@@ -704,14 +701,7 @@ justify-content: center;
 }
 
 .form-group select {
-    background-color: white;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    background-size: 12px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23e0e0e0' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
 }
 
 .buttons {
@@ -722,7 +712,7 @@ justify-content: center;
 }
 
 #submitBtn {
-    background-color: #038a7c;
+    background-color: #00695c;
     color: white;
     border: none;
     padding: 12px 24px;
@@ -734,11 +724,11 @@ justify-content: center;
 }
 
 #submitBtn:hover {
-    background-color: #036b61;
+    background-color: #004d40;
 }
 
 #submitBtn:disabled {
-    background-color: #95a5a6;
+    background-color: #555;
     cursor: not-allowed;
 }
 
@@ -747,8 +737,8 @@ justify-content: center;
 }
 
 #successMessage {
-    background-color: #f8f9fa;
-    border: 1px solid #28a745;
+    background-color: #252525;
+    border: 1px solid #4caf50;
     border-radius: 5px;
     padding: 20px;
     margin-top: 20px;
@@ -756,89 +746,82 @@ justify-content: center;
 }
 
 #successMessage p {
-    color: #28a745;
+    color: #4caf50;
     font-size: 1.1rem;
     margin-bottom: 15px;
 }
 
 #newSubmission {
-    background-color: #03634b;
+    background-color: #2e7d32;
     color: white;
     border: none;
     padding: 10px 20px;
-    border-radius: 5px;
     border-radius: 30px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 #newSubmission:hover {
-    background-color: #05807a;
+    background-color: #1b5e20;
 }
 
-/* File input styling to match other inputs */
 .form-group input[type="file"] {
     padding: 6px;
-    background-color: white;
+    background-color: #252525;
+    color: #e0e0e0;
 }
 
-/* Responsive Adjustments */
-@media (min-width: 768px) {
-    .container {
-        padding: 2em;
-    }
-    
-    .container h1 {
-        font-size: 1.8rem;
-    }
-    
-    .form-group label {
-        font-size: 1rem;
-    }
-    
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        font-size: 1rem;
-        padding: 10px;
-    }
-    
-    #submitBtn,
-    #newSubmission {
-        font-size: 1.1rem;
-        padding: 12px 24px;
-    }
-    
-    #successMessage p {
-        font-size: 1.1rem;
-    }
+/* Success Page Dark Theme */
+.success-box {
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    text-align: center;
+    color: #e0e0e0;
 }
 
-@media (max-width: 480px) {
-    .container {
-        padding: 1em;
-    }
-    
-    .container h1 {
-        font-size: 1.3rem;
-    }
-    
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        padding: 8px;
-        font-size: 0.8rem;
-    }
-    
-    #submitBtn,
-    #newSubmission {
-        padding: 10px;
-        font-size: 0.9rem;
-    }
+.success-icon {
+    color: #4CAF50;
+    font-size: 60px;
+    margin-bottom: 20px;
 }
 
+.btn {
+    display: inline-block;
+    background-color: #2e7d32;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 20px;
+}
 
+.btn:hover {
+    background-color: #1b5e20;
+}
 
+#qr-code-container {
+    margin: 20px 0;
+    background-color: #252525;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+#qr-code {
+    max-width: 200px;
+    margin: 0 auto;
+    display: block;
+}
+
+.ticket-info {
+    text-align: left;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #252525;
+    border-radius: 4px;
+    color: #e0e0e0;
+}
 
 .payment-message {
     animation: fadeIn 0.5s ease-in;
@@ -847,59 +830,4 @@ justify-content: center;
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-}
-
-
-
-/*succespage
-
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
-}
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-.success-box {
-    background-color: white;
-    border-radius: 8px;
-    padding: 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    text-align: center;
-}
-.success-icon {
-    color: #4CAF50;
-    font-size: 60px;
-    margin-bottom: 20px;
-}
-.btn {
-    display: inline-block;
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 4px;
-    margin-top: 20px;
-}
-.btn:hover {
-    background-color: #45a049;
-}
-#qr-code-container {
-    margin: 20px 0;
-}
-#qr-code {
-    max-width: 200px;
-    margin: 0 auto;
-    display: block;
-}
-.ticket-info {
-    text-align: left;
-    margin: 20px 0;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
 }
