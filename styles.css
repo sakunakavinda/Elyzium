@@ -115,6 +115,23 @@ header {
     color: #1b8c5b;
 }
 
+#contactDetailsBtn {
+    width: 100%;
+    padding: 12px;
+    background-color: #2b6648;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+}
+
+#contactDetailsBtn:hover {
+    background-color: #45a049;
+}
+
 .ticket-categories {
     background-color: #d6f9f5;
     padding: 20px;
