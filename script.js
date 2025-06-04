@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     title.addEventListener('click', function () {
-        window.location.href = './index.html';
+        window.location.href = './home.html';
     });
 
     // Initialize page
