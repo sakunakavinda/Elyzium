@@ -21,6 +21,7 @@
       width: 100%;
       height: 100vh;
       overflow: hidden;
+      z-index: 1;
     }
 
     video {
@@ -31,16 +32,28 @@
       min-height: 100%;
       transform: translate(-50%, -50%);
       object-fit: cover;
-      z-index: -1;
+      z-index: 0;
       display: none;
     }
 
-    /* Default: show desktop video */
     .video-desktop {
       display: block;
     }
 
-    /* Mobile-specific styles */
+    .video-mobile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  object-fit: cover; /* change from contain to cover */
+  z-index: -1;
+  display: none; /* keep default hidden */
+}
+
     @media (max-width: 768px) {
       .video-desktop {
         display: none;
@@ -49,8 +62,26 @@
       .video-mobile {
         display: block;
       }
+
+      .mobile-title {
+        display: block;
+      }
     }
 
+    .mobile-title {
+  display: none; /* Hide by default */
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 4px black;
+  text-align: center;
+  padding: 10px;
+  z-index: 10;
+}
     .overlay-content {
       position: absolute;
       bottom: 10%;
@@ -63,24 +94,29 @@
 
     .btn {
       display: inline-block;
-      background-color: #ff6b6b;
+      background-color: transparent;
       color: white;
-      padding: 15px 30px;
-      font-size: 1rem;
-      border: none;
+      padding: 18px 36px;
+      font-size: 1.2rem;
+      border: 2px solid white;
       text-decoration: none;
       border-radius: 30px;
-      transition: background 0.3s ease;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     .btn:hover {
-      background-color: #ff3b3b;
+      background-color: white;
+      color: #000;
     }
 
     @media (max-width: 480px) {
       .btn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
+        padding: 14px 30px;
+        font-size: 1.1rem;
+      }
+
+      .mobile-title {
+        font-size: 1.8rem;
       }
     }
   </style>
@@ -99,10 +135,13 @@
       Your browser does not support the video tag.
     </video>
 
+    <!-- Mobile title -->
+    <div class="mobile-title">ELYZIUM EVENTS</div>
+
+    <!-- Get Started Button -->
     <div class="overlay-content">
-      <a href="#get-started" class="btn" onclick="window.location.href='home.html'">Get Started</a>
+      <a href="home.html" class="btn">Get Started</a>
     </div>
   </div>
 </body>
 </html>
-
