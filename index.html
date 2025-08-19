@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Responsive Home Page</title>
+  <title>ELYZIUM Events</title>
   <style>
     * {
       margin: 0;
@@ -13,7 +13,8 @@
 
     html, body {
       height: 100%;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
     }
 
     .hero-container {
@@ -21,120 +22,120 @@
       width: 100%;
       height: 100vh;
       overflow: hidden;
-      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
     }
 
+    /* Videos */
     video {
       position: absolute;
       top: 50%;
       left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      transform: translate(-50%, -50%);
       z-index: 0;
-      display: none;
     }
 
-    .video-desktop {
-      display: block;
-    }
-
-    .video-mobile {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  min-width: 100%;
-  min-height: 100%;
-  transform: translate(-50%, -50%);
-  object-fit: cover; /* change from contain to cover */
-  z-index: -1;
-  display: none; /* keep default hidden */
-}
+    .video-desktop { display: block; }
+    .video-mobile { display: none; }
 
     @media (max-width: 768px) {
-      .video-desktop {
-        display: none;
-      }
-
-      .video-mobile {
-        display: block;
-      }
-
-      .mobile-title {
-        display: block;
-      }
+      .video-desktop { display: none; }
+      .video-mobile { display: block; }
     }
 
+    /* Gradient overlay for better readability */
+    .hero-container::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.3));
+      z-index: 1;
+    }
+
+    /* Mobile title */
     .mobile-title {
-  display: none; /* Hide by default */
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  color: white;
-  font-size: 2rem;
-  font-weight: bold;
-  text-shadow: 1px 1px 4px black;
-  text-align: center;
-  padding: 10px;
-  z-index: 10;
-}
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3rem;
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+      opacity: 0;
+      animation: fadeIn 1s forwards 0.5s;
+      z-index: 2;
+    }
+
+    /* Overlay content */
     .overlay-content {
       position: absolute;
-  bottom: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  padding: 20px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0px;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      z-index: 2;
+      text-align: center;
+      opacity: 0;
+      animation: fadeIn 1s forwards 1s;
     }
 
+    /* Buttons */
     .btn {
       display: inline-block;
-      background-color: transparent;
-      color: white;
       padding: 18px 36px;
       font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
       border: 2px solid white;
+      border-radius: 50px;
       text-decoration: none;
-      border-radius: 30px;
-      transition: background 0.3s ease, color 0.3s ease;
+      transition: all 0.4s ease;
+      background: rgba(0,0,0,0.3);
     }
 
     .btn:hover {
       background-color: white;
-      color: #000;
+      color: #072a13;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .mobile-title { font-size: 2.5rem; }
+      .btn { padding: 16px 32px; font-size: 1.1rem; }
     }
 
     @media (max-width: 480px) {
-      .btn {
-        padding: 14px 30px;
-        font-size: 1.1rem;
-      }
-
-      .mobile-title {
-        font-size: 1.8rem;
-      }
+      .mobile-title { font-size: 2rem; top: 10%; }
+      .btn { padding: 14px 28px; font-size: 1rem; }
     }
   </style>
 </head>
 <body>
   <div class="hero-container">
     <!-- Desktop video -->
-    <video autoplay muted loop playsinline class="background-video video-desktop">
+    <video autoplay muted loop playsinline class="video-desktop">
       <source src="images/video.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
 
     <!-- Mobile video -->
-    <video autoplay muted loop playsinline class="background-video video-mobile">
+    <video autoplay muted loop playsinline class="video-mobile">
       <source src="images/video3.mp4" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
@@ -142,11 +143,10 @@
     <!-- Mobile title -->
     <div class="mobile-title">ELYZIUM EVENTS</div>
 
-    <!-- Get Started Button -->
+    <!-- Overlay buttons -->
     <div class="overlay-content">
       <a href="home.html" class="btn">Get Started</a>
-      <br><br>
-      <a href="admin-login.html" class="btn">Admin</a>
+      <a href="admin-login.html" class="btn">Admin Login</a>
     </div>
   </div>
 </body>
