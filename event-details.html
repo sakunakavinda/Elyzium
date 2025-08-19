@@ -16,16 +16,21 @@
   header {
     background-color: #073316;
     color: white;
-    padding: 1rem 2rem;
+    padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   }
 
   header h1 {
     font-size: 1.5rem;
-    margin: 0;
+    margin: 0.3rem 0;
+  }
+
+  header span {
+    margin: 0.3rem 0;
   }
 
   /* Main container */
@@ -43,23 +48,9 @@
     word-wrap: break-word;
   }
 
-  /* Delete button */
-  #deleteEventBtn {
-    background-color: #d32f2f;
-    color: white;
-    border: none;
-    padding: 0.8rem 1.2rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    display: block;
-    margin: 0 auto 2rem auto;
-    transition: background 0.3s ease, transform 0.2s ease;
-  }
-
-  #deleteEventBtn:hover {
-    background-color: #b71c1c;
-    transform: translateY(-2px);
+  /* Table container for responsive scroll */
+  .table-wrapper {
+    overflow-x: auto;
   }
 
   /* Table */
@@ -70,6 +61,7 @@
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    min-width: 500px;
   }
 
   th, td {
@@ -85,6 +77,25 @@
 
   tr:hover td {
     background-color: #f9f9f9;
+  }
+
+  /* Delete button */
+  #deleteEventBtn {
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: block;
+    margin: 1.5rem auto 0 auto;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  #deleteEventBtn:hover {
+    background-color: #b71c1c;
+    transform: translateY(-2px);
   }
 
   /* Responsive adjustments */
@@ -122,24 +133,30 @@
     #eventTitle {
       font-size: 1.3rem;
     }
+
+    #deleteEventBtn {
+      width: 100%;
+      font-size: 0.9rem;
+    }
   }
 </style>
 </head>
 <body>
   <header>
     <h1>🎟 Elyzium Admin Dashboard</h1>
-    <div>
-      <span id="adminName"></span>
-    </div>
+    <span id="adminName"></span>
   </header>
 
   <div class="container">
     <h1 id="eventTitle">Event Name</h1>
-    <button id="deleteEventBtn">Delete Event</button>
 
-    <table id="ticketTable">
-      <!-- Ticket types filled dynamically -->
-    </table>
+    <div class="table-wrapper">
+      <table id="ticketTable">
+        <!-- Ticket types filled dynamically -->
+      </table>
+    </div>
+
+    <button id="deleteEventBtn">Delete Event</button>
   </div>
 
 <script type="module">
