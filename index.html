@@ -84,12 +84,16 @@
 }
     .overlay-content {
       position: absolute;
-      bottom: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-      padding: 20px;
-      width: 100%;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  padding: 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0px;
     }
 
     .btn {
@@ -141,6 +145,8 @@
     <!-- Get Started Button -->
     <div class="overlay-content">
       <a href="home.html" class="btn">Get Started</a>
+      <br><br>
+      <a href="admin-login.html" class="btn">Admin</a>
     </div>
   </div>
 </body>

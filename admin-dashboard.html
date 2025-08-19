@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elyzium Admin Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+    }
+
+    header {
+      background-color: #072a13;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+    }
+
+    header button {
+      background: white;
+      color: #1d8240;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    header button:hover {
+  background: #057b38;
+  color: white;
+}
+
+    .dashboard {
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .card h3 {
+      margin-bottom: 0.5rem;
+      color: #1d8240;
+    }
+
+    .card p {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .table-container {
+      margin: 2rem;
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 0.8rem;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+/* Details button */
+  .detailsBtn {
+    background-color: #1d8240;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  .detailsBtn:hover {
+    background-color: #14612d;
+    transform: scale(1.05);
+  }
+
+  .detailsBtn:active {
+    transform: scale(0.95);
+  }
+
+  </style>
+  <script type="module" src="auth.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>🎟 Elyzium Admin Dashboard</h1>
+    <div>
+      <span id="adminName"></span>
+      <button id="addEventBtn">Add New Event</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <section class="dashboard">
+    <div class="card">
+      <h3>Total Events</h3>
+      <p id="eventCount">0</p>
+    </div>
+    <div class="card">
+      <h3>Total Tickets Sold</h3>
+      <p id="ticketCount">0</p>
+    </div>
+    <div class="card">
+      <h3>Active Users</h3>
+      <p id="userCount">0</p>
+    </div>
+    <div class="card">
+      <h3>Revenue</h3>
+      <p id="revenue">LKR 0</p>
+    </div>
+  </section>
+
+  <div class="table-container">
+    <h2>Upcoming Events</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Event Name</th>
+          <th>Date</th>
+          <th>Venue</th>
+          <th>Tickets Left</th>
+        </tr>
+      </thead>
+      <tbody id="eventsTable">
+        <!-- Filled by Firebase later -->
+      </tbody>
+    </table>
+  </div>
+
+<script type="module">
+  import { onAuthStateChanged, signOut } 
+  from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { collection, getDocs } 
+  from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { auth, db } from "./auth.js";
+
+const eventsTable = document.getElementById("eventsTable");
+
+// Protect page
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "admin-login.html";
+  } else {
+    document.getElementById("adminName").textContent = user.email;
+
+    // Fetch all events
+    const eventsSnap = await getDocs(collection(db, "events"));
+    document.getElementById("eventCount").textContent = eventsSnap.size;
+
+    eventsTable.innerHTML = ""; // clear existing rows
+
+    eventsSnap.forEach((doc) => {
+      const event = doc.data();
+      const eventId = doc.id; // save doc ID to pass in URL
+
+      const row = `
+        <tr>
+          <td>${event.title}</td>
+          <td>${event.date}</td>
+          <td>${event.venue}</td>
+          <td>
+            <button class="detailsBtn" data-id="${eventId}">Details</button>
+          </td>
+        </tr>
+      `;
+      eventsTable.insertAdjacentHTML("beforeend", row);
+    });
+
+    // Add event listeners to all details buttons
+    document.querySelectorAll(".detailsBtn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const eventId = e.target.dataset.id;
+        window.location.href = `event-details.html?id=${eventId}`;
+      });
+    });
+  }
+});
+
+// Sign out
+document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    window.location.href = "admin-login.html";
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+// Redirect Add New Event button
+document.getElementById("addEventBtn")?.addEventListener("click", () => {
+  window.location.href = "add-event.html";
+});
+
+</script>
+
+</body>
+</html>
