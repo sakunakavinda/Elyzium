@@ -199,12 +199,12 @@
   <div class="form-section">
     <div class="form-group">
       <label for="name">Full Name</label>
-      <input type="text" id="name" placeholder="John Doe">
+      <input type="text" id="name" placeholder="Name">
     </div>
 
     <div class="form-group">
       <label for="email">Email</label>
-      <input type="email" id="email" placeholder="johndoe@example.com" readonly>
+      <input type="email" id="email" placeholder="name@example.com" readonly>
     </div>
 
     <div id="progressContainer">
@@ -307,6 +307,7 @@ saveBtn.addEventListener('click', async () => {
     progressBar.style.width = '100%';
     setTimeout(() => progressContainer.style.display = 'none', 500);
     showToast("Profile updated successfully!");
+    window.location.href = "admin-dashboard.html";
   } catch(err) {
     console.error(err);
     progressContainer.style.display = 'none';
