@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elyzium Events - Home</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+  body { background: #000; color: #fff; overflow-x: hidden; }
+
+  /* Navbar */
+  nav {
+    width: 100%;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 10;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(10px);
+  }
+  .logo { font-size: 1.8rem; font-weight: 700; color: #00ffcc; letter-spacing: 2px; }
+  .nav-links {
+    display: flex;
+    align-items: center;
+  }
+  .nav-links a {
+    color: #fff;
+    margin-left: 1.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: #00ffcc; }
+
+  /* Hamburger menu */
+  #hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+  }
+  #hamburger div {
+    width: 25px;
+    height: 3px;
+    background: #00ffcc;
+    transition: 0.3s;
+  }
+
+  /* Overlay for blur effect */
+  #menuOverlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 5;
+  }
+  #menuOverlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Mobile nav */
+  @media(max-width:768px){
+    #hamburger { display: flex; }
+    .nav-links {
+      position: fixed;
+      top: 0; right: -100%;
+      height: 100vh;
+      width: 60%;
+      background: rgba(0,0,0,0.9);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      transition: right 0.3s ease-in-out;
+      z-index: 9;
+    }
+    .nav-links.show { right: 0; }
+    .nav-links a { font-size: 1.5rem; }
+  }
+
+  /* Hero Section */
+  .hero {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(circle at center, #001a00, #000);
+    padding-top: 80px;
+  }
+  .hero h1 {
+    font-size: 3rem;
+    color: #00ffcc;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px #00ffcc;
+  }
+  .hero p { font-size: 1.2rem; color: #c4e9d3; margin-bottom: 2rem; }
+  .hero .cta-btn {
+    padding: 14px 36px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #000;
+    background: #00ffcc;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .hero .cta-btn:hover { background: #00cc99; }
+
+  /* Events Section */
+  .events {
+    padding: 4rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  .event-card {
+    background: #111;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .event-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,255,204,0.4); }
+  .event-card img { width: 100%; height: 200px; object-fit: cover; }
+  .event-card .content {
+    padding: 1rem;
+  }
+  .event-card .content h3 { color: #00ffcc; margin-bottom: 0.5rem; }
+  .event-card .content p { font-size: 0.9rem; color: #c4e9d3; }
+
+  /* Footer */
+  footer {
+    background: #000;
+    color: #00ffcc;
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+  }
+
+  @media(max-width:768px){
+    .hero h1 { font-size: 2rem; }
+    .hero p { font-size: 1rem; }
+    .events { padding: 2rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <div class="logo">ELYZIUM</div>
+  <div id="hamburger">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a href="#eventsSection">Events</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="login.html">Login</a>
+  </div>
+</nav>
+
+<!-- Overlay for blur -->
+<div id="menuOverlay"></div>
+
+<!-- Hero Section -->
+<section class="hero">
+  <h1>Experience the Future of Events</h1>
+  <p>Book tickets, explore events, and enjoy unforgettable moments with Elyzium.</p>
+  <button class="cta-btn" onclick="document.getElementById('eventsSection').scrollIntoView({behavior:'smooth'})">Browse Events</button>
+</section>
+
+<!-- Events Section -->
+<section class="events" id="eventsSection"></section>
+
+<!-- Footer -->
+<footer>
+  &copy; 2025 Elyzium Events. All Rights Reserved.
+</footer>
+
+<script type="module">
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { db } from "./auth.js"; // Firebase initialization
+
+const eventsContainer = document.querySelector('.events');
+
+async function loadEvents() {
+  const eventsSnap = await getDocs(collection(db, "events"));
+  eventsContainer.innerHTML = '';
+  eventsSnap.forEach(doc => {
+    const event = doc.data();
+    const card = document.createElement('div');
+    card.classList.add('event-card');
+    card.innerHTML = `
+      <img src="${event.flyerUrl || 'images/default-event.png'}" alt="${event.title}">
+      <div class="content">
+        <h3>${event.title}</h3>
+        <p>${event.date} | ${event.venue}</p>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      window.location.href = `home.html?id=${doc.id}`;
+    });
+    eventsContainer.appendChild(card);
+  });
+}
+
+loadEvents();
+
+// Hamburger toggle
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+const menuOverlay = document.getElementById('menuOverlay');
+
+hamburger.addEventListener('click', () => {
+  navLinks.classList.toggle('show');
+  menuOverlay.classList.toggle('show');
+});
+
+menuOverlay.addEventListener('click', () => {
+  navLinks.classList.remove('show');
+  menuOverlay.classList.remove('show');
+});
+</script>
+
+</body>
+</html>

@@ -36,7 +36,9 @@ saveEventBtn.parentNode.appendChild(progressBar);
 saveEventBtn.addEventListener("click", async () => {
   const name = document.getElementById("eventName").value;
   const date = document.getElementById("eventDate").value;
+  const time = document.getElementById("eventTime").value; // new
   const venue = document.getElementById("venue").value;
+  const organizer = document.getElementById("organizer").value; // new
 
   const type1 = document.getElementById("type1").value;
   const type2 = document.getElementById("type2").value;
@@ -48,7 +50,7 @@ saveEventBtn.addEventListener("click", async () => {
 
   const flyerFile = document.getElementById("flyer").files[0];
 
-  if (!name || !date || !venue || !type1 || !qty1 || !flyerFile) {
+  if (!name || !date || !time || !venue || !organizer || !type1 || !qty1 || !flyerFile) {
     msg.textContent = "Please fill all required fields!";
     return;
   }
@@ -73,11 +75,13 @@ saveEventBtn.addEventListener("click", async () => {
     const flyerUrl = uploadData.data.url;
     progressBar.value = 60;
 
-    // Save event with ticket types and quantities
+    // Save event with ticket types, time, and organizer
     await addDoc(collection(db, "events"), {
       title: name,
       date: date,
+      time: time,             // saved
       venue: venue,
+      organizer: organizer,   // saved
       ticketTypes: {
         type1: { price: Number(type1), quantity: Number(qty1) },
         type2: { price: Number(type2), quantity: Number(qty2) || 0 },
