@@ -146,8 +146,23 @@
     <!-- Overlay buttons -->
     <div class="overlay-content">
       <a href="home.html" class="btn">Get Started</a>
-      <a href="admin-login.html" class="btn">Admin Login</a>
+      <a href="#" class="btn" id="adminBtn">Admin Login</a>
     </div>
   </div>
+  <script>
+ document.getElementById("adminBtn").addEventListener("click", function(e) {
+    e.preventDefault(); // prevent default link
+    // Redirect using replace so the current page is replaced in history
+    window.location.replace("admin-login.html");
+  });
+
+  // Optional: prevent back navigation on this page
+  (function preventBackNavigation() {
+    window.history.pushState(null, document.title, window.location.href);
+    window.addEventListener('popstate', function (event) {
+      window.history.pushState(null, document.title, window.location.href);
+    });
+  })();
+  </script>
 </body>
 </html>

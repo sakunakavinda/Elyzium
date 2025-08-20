@@ -57,7 +57,7 @@ if (registerBtn) {
       });
 
       alert("Registration successful!");
-      window.location.href = "admin-login.html"; // redirect to login
+      window.location.replace("admin-login.html"); // redirect to login
     } catch (error) {
       errorElement.textContent = error.message;
     }
@@ -76,7 +76,7 @@ if (loginBtn) {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       alert("Login successful!");
-      window.location.href = "admin-dashboard.html"; // redirect to admin home
+      window.location.replace("admin-dashboard.html"); // redirect to admin home
     } catch (error) {
       errorElement.textContent = error.message;
     }
