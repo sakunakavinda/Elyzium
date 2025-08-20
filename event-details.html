@@ -8,7 +8,7 @@
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    background: #000000;
+    background: #000;
     color: #333;
   }
 
@@ -35,12 +35,31 @@
 
   /* Container */
   .container {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 2rem auto;
     padding: 1rem;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
   }
 
-  /* Event title */
+  /* Flyer */
+  .flyer {
+    flex: 1;
+    min-width: 280px;
+  }
+  .flyer img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+
+  /* Ticket Table & Details */
+  .details {
+    flex: 2;
+    min-width: 300px;
+  }
+
   #eventTitle {
     color: #e1f3e7;
     text-align: center;
@@ -48,7 +67,6 @@
     word-wrap: break-word;
   }
 
-  /* Table container */
   .table-container {
     background: white;
     padding: 1rem;
@@ -81,7 +99,6 @@
     background-color: #f1f9f1;
   }
 
-  /* Delete button */
   #deleteEventBtn {
     background-color: #d32f2f;
     color: white;
@@ -101,13 +118,13 @@
   }
 
   /* Responsive */
-  @media (max-width: 768px) {
-    header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
+  @media (max-width: 992px) {
+    .container { flex-direction: column; gap: 20px; }
+    #eventTitle { font-size: 1.6rem; }
+  }
 
-    .container { padding: 0 1rem; }
+  @media (max-width: 768px) {
+    header { flex-direction: column; align-items: flex-start; }
     th, td { padding: 0.6rem; font-size: 0.9rem; }
     #deleteEventBtn { padding: 0.7rem 1rem; font-size: 0.95rem; }
   }
@@ -128,15 +145,21 @@
 </header>
 
 <div class="container">
-  <h1 id="eventTitle">Event Name</h1>
-
-  <div class="table-container">
-    <table id="ticketTable">
-      <!-- Ticket types filled dynamically -->
-    </table>
+  <div class="flyer">
+    <img id="eventFlyer" src="images/default-event.png" alt="Event Flyer">
   </div>
 
-  <button id="deleteEventBtn">Delete Event</button>
+  <div class="details">
+    <h1 id="eventTitle">Event Name</h1>
+
+    <div class="table-container">
+      <table id="ticketTable">
+        <!-- Ticket types filled dynamically -->
+      </table>
+    </div>
+
+    <button id="deleteEventBtn">Delete Event</button>
+  </div>
 </div>
 
 <script type="module">
@@ -151,10 +174,10 @@
   const ticketTable = document.getElementById("ticketTable");
   const adminName = document.getElementById("adminName");
   const deleteBtn = document.getElementById("deleteEventBtn");
+  const eventFlyer = document.getElementById("eventFlyer");
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) window.location.href = "admin-login.html";
-
     adminName.textContent = user.email;
 
     const docSnap = await getDoc(doc(db, "events", eventId));
@@ -166,11 +189,11 @@
 
     const event = docSnap.data();
     eventTitle.textContent = event.title;
+    eventFlyer.src = event.flyerUrl || "images/default-event.png";
 
     // Build ticket types table
     const ticketTypes = event.ticketTypes || {};
     let html = "<thead><tr><th>Ticket Type</th><th>Price (LKR)</th><th>Quantity</th><th>Issued</th><th>Remaining</th></tr></thead><tbody>";
-
     for (const [type, data] of Object.entries(ticketTypes)) {
       const totalQuantity = data.quantity || 0;
       const price = data.price || 0;

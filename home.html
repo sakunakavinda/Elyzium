@@ -5,7 +5,65 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Event Homepage</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link rel="stylesheet" href="styles.css">
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #000;
+    color: #fff;
+    margin: 0;
+}
+.wrapper { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+}
+.logo-container img { height: 60px; }
+.event-title { font-size: 1.8rem; font-weight: 700; color: #00ffcc; letter-spacing: 2px; }
+
+.cover-image img { width: 100%; border-radius: 12px; margin-bottom: 20px; }
+
+.event-details {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 60px;
+}
+.details, .ticket-categories { flex: 1; }
+.details .info p { margin: 8px 0; }
+.ticket-categories h2 { margin-bottom: 10px; }
+.ticket { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.ticket-divider { border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 10px 0; }
+
+button {
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+}
+#contactDetailsBtn { background: #1d8240; color: #fff; }
+#contactDetailsBtn:hover { background: #14612d; }
+#buyTicketsBtn { background: #00ffcc; color: #000; }
+#buyTicketsBtn:hover { background: #00cc99; }
+
+footer {
+    background: #000;
+    color: #00ffcc;
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.9rem;
+}
+footer .social-icons a { color: #00ffcc; margin: 0 8px; text-decoration: none; }
+footer .social-icons a:hover { color: #fff; }
+
+@media (max-width: 992px) {
+    .event-details { flex-direction: column; gap: 20px; }
+    .cover-image img { margin-bottom: 20px; }
+}
+</style>
 </head>
 <body>
 <div class="wrapper">
@@ -19,7 +77,7 @@
 
     <!-- Cover Image -->
     <div class="cover-image">
-        <img id="eventCover">
+        <img id="eventCover" src="images/default-event.png">
     </div>
 
     <!-- Event Details -->
@@ -76,7 +134,6 @@
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import { db } from "./auth.js"; // your Firebase init file
 
-// Helper to get event ID from URL
 function getEventId() {
     const params = new URLSearchParams(window.location.search);
     return params.get('id');
@@ -90,7 +147,7 @@ async function loadEventDetails() {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
         const event = docSnap.data();
-        document.getElementById("eventCover").src = event.flyerUrl;
+        document.getElementById("eventCover").src = event.flyerUrl || "images/default-event.png";
         document.getElementById("eventDescription").textContent = event.description || "No description available.";
         document.getElementById("eventDate").textContent = event.date || "Not scheduled";
         document.getElementById("eventTime").textContent = event.time || "Not scheduled";
@@ -99,12 +156,9 @@ async function loadEventDetails() {
         document.getElementById("priceMat").textContent = event.priceMat ? `${event.priceMat} LKR` : "1000 LKR";
         document.getElementById("priceChair").textContent = event.priceChair ? `${event.priceChair} LKR` : "1500 LKR";
 
-        // Buy tickets button link
         document.getElementById("buyTicketsBtn").onclick = () => {
             window.location.href = `buy.html?id=${eventId}`;
         }
-
-        // Contact button link
         document.getElementById("contactDetailsBtn").onclick = () => {
             window.open(event.contactUrl || "https://wa.me/94716531817");
         }
@@ -113,7 +167,6 @@ async function loadEventDetails() {
     }
 }
 
-// Load event details on page load
 loadEventDetails();
 </script>
 </body>
