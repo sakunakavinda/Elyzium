@@ -23,6 +23,13 @@ html, body {
   justify-content: center;
   text-align: center;
   overflow: hidden;
+  transition: transform 0.8s ease-in, opacity 0.8s ease-in;
+}
+
+.zoom-page {
+  transform: scale(8);
+  opacity: 0;
+  transform-origin: center center;
 }
 
 #bgCanvas {
@@ -128,6 +135,7 @@ html, body {
 const canvas = document.getElementById("bgCanvas");
 const ctx = canvas.getContext("2d");
 let particlesArray;
+let accelerate = false;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
@@ -151,9 +159,16 @@ class Particle {
     const centerX = canvas.width/2;
     const centerY = canvas.height/2;
     const zoomSpeed = 0.6;
-    this.x += (this.x - centerX) * zoomSpeed / 500;
-    this.y += (this.y - centerY) * zoomSpeed / 500;
-    this.size += 0.03;
+    
+    if(accelerate) {
+      this.x += (this.x - centerX) * 0.02;
+      this.y += (this.y - centerY) * 0.02;
+      this.size += 0.05;
+    } else {
+      this.x += (this.x - centerX) * zoomSpeed / 500;
+      this.y += (this.y - centerY) * zoomSpeed / 500;
+      this.size += 0.03;
+    }
 
     if(this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height){
       this.x = Math.random()*canvas.width;
@@ -224,6 +239,17 @@ animate();
 document.getElementById("adminBtn").addEventListener("click",(e)=>{
   e.preventDefault();
   window.location.replace("admin-login.html");
+});
+
+const diveBtn = document.querySelector(".btn");
+const heroContainer = document.querySelector(".hero-container");
+const redirectUrl = "home.html";
+
+diveBtn.addEventListener("click", (e)=>{
+  e.preventDefault();
+  accelerate = true;
+  heroContainer.classList.add("zoom-page");
+  setTimeout(()=>{ window.location.href = redirectUrl; }, 800);
 });
 </script>
 
