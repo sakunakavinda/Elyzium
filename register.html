@@ -119,8 +119,15 @@ body {
     <input type="password" id="password" placeholder="Password">
     <input type="password" id="confirmPassword" placeholder="Confirm Password">
     <button id="registerBtn">Register</button>
-    <a href="admin-login.html" class="login-link">Already have an account? Login</a>
+    <a href="#" class="login-link" id="loginLink">RAlready have an account? Login</a>
     <p id="error"></p>
   </div>
+  <script>
+  document.getElementById("loginLink").addEventListener("click", (e) => {
+    e.preventDefault();
+    // Redirect and remove login page from history
+    window.location.replace("admin-login.html");
+  });
+</script>
 </body>
 </html>

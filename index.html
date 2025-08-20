@@ -14,155 +14,213 @@
     html, body {
       height: 100%;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow-x: hidden;
+      overflow: hidden;
+      background: #000;
+      color: white;
     }
 
     .hero-container {
       position: relative;
       width: 100%;
       height: 100vh;
-      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
+      text-align: center;
+      overflow: hidden;
     }
 
-    /* Videos */
-    video {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: translate(-50%, -50%);
-      z-index: 0;
-    }
-
-    .video-desktop { display: block; }
-    .video-mobile { display: none; }
-
-    @media (max-width: 768px) {
-      .video-desktop { display: none; }
-      .video-mobile { display: block; }
-    }
-
-    /* Gradient overlay for better readability */
-    .hero-container::before {
-      content: "";
+    /* Animated particle canvas */
+    #bgCanvas {
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.3));
-      z-index: 1;
+      z-index: 0;
+      background: radial-gradient(circle at center, #003300, #001a00, #000);
     }
 
-    /* Mobile title */
-    .mobile-title {
-      position: absolute;
-      top: 15%;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 3rem;
-      font-weight: 700;
-      text-align: center;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
-      opacity: 0;
-      animation: fadeIn 1s forwards 0.5s;
+    .overlay {
+      position: relative;
       z-index: 2;
     }
 
-    /* Overlay content */
-    .overlay-content {
-      position: absolute;
-      bottom: 12%;
-      left: 50%;
-      transform: translateX(-50%);
+    .title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-shadow: 0 0 20px rgba(0,255,100,0.8);
+      animation: glowPulse 3s infinite alternate;
+      color: #00ff66;
+    }
+
+    @keyframes glowPulse {
+      from { text-shadow: 0 0 10px #00ff66, 0 0 20px #00ff66; }
+      to   { text-shadow: 0 0 30px #00ff66, 0 0 60px #00ff66; }
+    }
+
+    .buttons {
+      margin-top: 30px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       gap: 20px;
-      z-index: 2;
-      text-align: center;
-      opacity: 0;
-      animation: fadeIn 1s forwards 1s;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
-    /* Buttons */
     .btn {
-      display: inline-block;
-      padding: 18px 36px;
+      padding: 16px 32px;
       font-size: 1.2rem;
       font-weight: 600;
-      color: white;
-      border: 2px solid white;
+      border: 2px solid #ffffff;
       border-radius: 50px;
-      text-decoration: none;
-      transition: all 0.4s ease;
-      background: rgba(0,0,0,0.3);
+      color: #c4e9d3;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(6px);
     }
 
     .btn:hover {
-      background-color: white;
-      color: #072a13;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      background: #00ff66;
+      color: #000;
+      box-shadow: 0 0 20px #00ff66;
+      border: none;
     }
 
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 1024px) {
-      .mobile-title { font-size: 2.5rem; }
-      .btn { padding: 16px 32px; font-size: 1.1rem; }
-    }
-
-    @media (max-width: 480px) {
-      .mobile-title { font-size: 2rem; top: 10%; }
-      .btn { padding: 14px 28px; font-size: 1rem; }
+    @media (max-width: 768px) {
+      .title { font-size: 2.5rem; }
+      .btn { font-size: 1rem; padding: 12px 24px; }
     }
   </style>
 </head>
 <body>
   <div class="hero-container">
-    <!-- Desktop video -->
-    <video autoplay muted loop playsinline class="video-desktop">
-      <source src="images/video.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-
-    <!-- Mobile video -->
-    <video autoplay muted loop playsinline class="video-mobile">
-      <source src="images/video3.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-
-    <!-- Mobile title -->
-    <div class="mobile-title">ELYZIUM EVENTS</div>
-
-    <!-- Overlay buttons -->
-    <div class="overlay-content">
-      <a href="home.html" class="btn">Get Started</a>
-      <a href="#" class="btn" id="adminBtn">Admin Login</a>
+    <canvas id="bgCanvas"></canvas>
+    <div class="overlay">
+      <div class="title">ELYZIUM EVENTS</div>
+      <div class="buttons">
+        <a href="home.html" class="btn">Get Started</a>
+        <a href="#" class="btn" id="adminBtn">Admin Login</a>
+      </div>
     </div>
   </div>
-  <script>
- document.getElementById("adminBtn").addEventListener("click", function(e) {
-    e.preventDefault(); // prevent default link
-    // Redirect using replace so the current page is replaced in history
-    window.location.replace("admin-login.html");
-  });
 
-  // Optional: prevent back navigation on this page
-  (function preventBackNavigation() {
-    window.history.pushState(null, document.title, window.location.href);
-    window.addEventListener('popstate', function (event) {
-      window.history.pushState(null, document.title, window.location.href);
+  <script>
+    // Futuristic particle network background
+    const canvas = document.getElementById("bgCanvas");
+    const ctx = canvas.getContext("2d");
+    let particlesArray;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const mouse = {
+      x: null,
+      y: null,
+      radius: 150
+    };
+
+    window.addEventListener("mousemove", function(event) {
+      mouse.x = event.x;
+      mouse.y = event.y;
     });
-  })();
+
+    class Particle {
+      constructor(x, y, dx, dy, size, color) {
+        this.x = x;
+        this.y = y;
+        this.dx = dx;
+        this.dy = dy;
+        this.size = size;
+        this.color = color;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+      update() {
+        if (this.x + this.size > canvas.width || this.x - this.size < 0) {
+          this.dx = -this.dx;
+        }
+        if (this.y + this.size > canvas.height || this.y - this.size < 0) {
+          this.dy = -this.dy;
+        }
+        this.x += this.dx;
+        this.y += this.dy;
+
+        // Interactivity
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < mouse.radius) {
+          this.x -= dx / 10;
+          this.y -= dy / 10;
+        }
+        this.draw();
+      }
+    }
+
+    function init() {
+      particlesArray = [];
+      let numberOfParticles = (canvas.width * canvas.height) / 9000;
+      for (let i = 0; i < numberOfParticles; i++) {
+        let size = (Math.random() * 3) + 1;
+        let x = Math.random() * (canvas.width - size * 2) + size;
+        let y = Math.random() * (canvas.height - size * 2) + size;
+        let dx = (Math.random() - 0.5) * 1.5;
+        let dy = (Math.random() - 0.5) * 1.5;
+        let color = "rgba(0,255,100,0.7)";
+        particlesArray.push(new Particle(x, y, dx, dy, size, color));
+      }
+    }
+
+    function connect() {
+      for (let a = 0; a < particlesArray.length; a++) {
+        for (let b = a; b < particlesArray.length; b++) {
+          let dx = particlesArray[a].x - particlesArray[b].x;
+          let dy = particlesArray[a].y - particlesArray[b].y;
+          let distance = dx * dx + dy * dy;
+          if (distance < (canvas.width/7) * (canvas.height/7)) {
+            ctx.strokeStyle = "rgba(0,255,100,0.1)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+      }
+      connect();
+    }
+
+    window.addEventListener("resize", function() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      init();
+    });
+
+    window.addEventListener("mouseout", function() {
+      mouse.x = undefined;
+      mouse.y = undefined;
+    });
+
+    init();
+    animate();
+
+    // Admin button action
+    document.getElementById("adminBtn").addEventListener("click", function(e) {
+      e.preventDefault();
+      window.location.replace("admin-login.html");
+    });
   </script>
 </body>
 </html>

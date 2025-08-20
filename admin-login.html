@@ -117,8 +117,15 @@ body {
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Password">
     <button id="loginBtn">Login</button>
-    <a href="register.html" class="register-link">Register Now</a>
+    <a href="#" class="register-link" id="registerLink">Register Now</a>
     <p id="error"></p>
   </div>
+  <script>
+  document.getElementById("registerLink").addEventListener("click", (e) => {
+    e.preventDefault();
+    // Redirect and remove login page from history
+    window.location.replace("register.html");
+  });
+</script>
 </body>
 </html>

@@ -307,7 +307,7 @@ saveBtn.addEventListener('click', async () => {
     progressBar.style.width = '100%';
     setTimeout(() => progressContainer.style.display = 'none', 500);
     showToast("Profile updated successfully!");
-    window.location.href = "admin-dashboard.html";
+    window.location.replace ("admin-dashboard.html");
   } catch(err) {
     console.error(err);
     progressContainer.style.display = 'none';
@@ -321,7 +321,7 @@ saveBtn.addEventListener('click', async () => {
 logoutBtn.addEventListener('click', async()=>{
   try{
     await signOut(auth);
-    window.location.href="admin-login.html";
+    window.location.replace ("admin-login.html");
   }catch{
     showToast("Logout failed", "#e74c3c");
   }
