@@ -86,9 +86,35 @@
       border: none;
     }
 
+    /* Minimalistic Admin Login button pinned to upper-right corner */
+    #adminBtn {
+      position: fixed; /* use fixed to always stay on top-right */
+      top: 20px;
+      right: 20px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid #00ff66;
+      border-radius: 8px;
+      color: #00ff66;
+      background: rgba(0,0,0,0.3);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    #adminBtn:hover {
+      background: #00ff66;
+      color: #000;
+      box-shadow: 0 0 10px #00ff66;
+      border: none;
+    }
+
     @media (max-width: 768px) {
       .title { font-size: 2.5rem; }
       .btn { font-size: 1rem; padding: 12px 24px; }
+      #adminBtn { padding: 5px 10px; font-size: 0.75rem; }
     }
   </style>
 </head>
@@ -99,13 +125,13 @@
       <div class="title">ELYZIUM EVENTS</div>
       <div class="buttons">
         <a href="home.html" class="btn">Get Started</a>
-        <a href="#" class="btn" id="adminBtn">Admin Login</a>
       </div>
     </div>
+    <!-- Admin Login button moved outside overlay -->
+    <a href="#" id="adminBtn">Admin Login</a>
   </div>
 
   <script>
-    // Futuristic particle network background
     const canvas = document.getElementById("bgCanvas");
     const ctx = canvas.getContext("2d");
     let particlesArray;
@@ -113,11 +139,7 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const mouse = {
-      x: null,
-      y: null,
-      radius: 150
-    };
+    const mouse = { x: null, y: null, radius: 150 };
 
     window.addEventListener("mousemove", function(event) {
       mouse.x = event.x;
@@ -140,16 +162,11 @@
         ctx.fill();
       }
       update() {
-        if (this.x + this.size > canvas.width || this.x - this.size < 0) {
-          this.dx = -this.dx;
-        }
-        if (this.y + this.size > canvas.height || this.y - this.size < 0) {
-          this.dy = -this.dy;
-        }
+        if (this.x + this.size > canvas.width || this.x - this.size < 0) this.dx = -this.dx;
+        if (this.y + this.size > canvas.height || this.y - this.size < 0) this.dy = -this.dy;
         this.x += this.dx;
         this.y += this.dy;
 
-        // Interactivity
         let dx = mouse.x - this.x;
         let dy = mouse.y - this.y;
         let distance = Math.sqrt(dx * dx + dy * dy);
@@ -196,9 +213,7 @@
     function animate() {
       requestAnimationFrame(animate);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < particlesArray.length; i++) {
-        particlesArray[i].update();
-      }
+      for (let i = 0; i < particlesArray.length; i++) particlesArray[i].update();
       connect();
     }
 
@@ -208,15 +223,11 @@
       init();
     });
 
-    window.addEventListener("mouseout", function() {
-      mouse.x = undefined;
-      mouse.y = undefined;
-    });
+    window.addEventListener("mouseout", function() { mouse.x = undefined; mouse.y = undefined; });
 
     init();
     animate();
 
-    // Admin button action
     document.getElementById("adminBtn").addEventListener("click", function(e) {
       e.preventDefault();
       window.location.replace("admin-login.html");
