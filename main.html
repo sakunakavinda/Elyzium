@@ -22,10 +22,7 @@
     backdrop-filter: blur(10px);
   }
   .logo { font-size: 1.8rem; font-weight: 700; color: #00ffcc; letter-spacing: 2px; }
-  .nav-links {
-    display: flex;
-    align-items: center;
-  }
+  .nav-links { display: flex; align-items: center; }
   .nav-links a {
     color: #fff;
     margin-left: 1.5rem;
@@ -36,25 +33,13 @@
   .nav-links a:hover { color: #00ffcc; }
 
   /* Hamburger menu */
-  #hamburger {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    gap: 5px;
-  }
-  #hamburger div {
-    width: 25px;
-    height: 3px;
-    background: #00ffcc;
-    transition: 0.3s;
-  }
+  #hamburger { display: none; flex-direction: column; cursor: pointer; gap: 5px; }
+  #hamburger div { width: 25px; height: 3px; background: #00ffcc; transition: 0.3s; }
 
   /* Overlay for blur effect */
   #menuOverlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
     background: rgba(0,0,0,0.4);
     backdrop-filter: blur(6px);
     opacity: 0;
@@ -62,10 +47,7 @@
     transition: opacity 0.3s;
     z-index: 5;
   }
-  #menuOverlay.show {
-    opacity: 1;
-    pointer-events: all;
-  }
+  #menuOverlay.show { opacity: 1; pointer-events: all; }
 
   /* Mobile nav */
   @media(max-width:768px){
@@ -73,12 +55,10 @@
     .nav-links {
       position: fixed;
       top: 0; right: -100%;
-      height: 100vh;
-      width: 60%;
+      height: 100vh; width: 60%;
       background: rgba(0,0,0,0.9);
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      justify-content: center; align-items: center;
       gap: 2rem;
       transition: right 0.3s ease-in-out;
       z-index: 9;
@@ -89,23 +69,37 @@
 
   /* Hero Section */
   .hero {
+    position: relative;
     height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 80px;
+    overflow: hidden;
+  }
+  #heroCanvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    background: radial-gradient(circle at center, #001a00, #000);
-    padding-top: 80px;
   }
-  .hero h1 {
+  .hero-content h1 {
     font-size: 3rem;
     color: #00ffcc;
     margin-bottom: 1rem;
     text-shadow: 0 0 20px #00ffcc;
   }
-  .hero p { font-size: 1.2rem; color: #c4e9d3; margin-bottom: 2rem; }
-  .hero .cta-btn {
+  .hero-content p { font-size: 1.2rem; color: #c4e9d3; margin-bottom: 2rem; }
+  .hero-content .cta-btn {
     padding: 14px 36px;
     font-size: 1.1rem;
     font-weight: 600;
@@ -116,7 +110,20 @@
     cursor: pointer;
     transition: all 0.3s;
   }
-  .hero .cta-btn:hover { background: #00cc99; }
+  .hero-content .cta-btn:hover { background: #00cc99; }
+
+  /* Search Bar */
+  #searchContainer {
+    text-align: center;
+    margin: 2rem 0;
+  }
+  #searchInput {
+    width: 80%; max-width: 400px;
+    padding: 10px 15px;
+    border-radius: 30px;
+    border: none;
+    font-size: 1rem;
+  }
 
   /* Events Section */
   .events {
@@ -134,9 +141,7 @@
   }
   .event-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,255,204,0.4); }
   .event-card img { width: 100%; height: 200px; object-fit: cover; }
-  .event-card .content {
-    padding: 1rem;
-  }
+  .event-card .content { padding: 1rem; }
   .event-card .content h3 { color: #00ffcc; margin-bottom: 0.5rem; }
   .event-card .content p { font-size: 0.9rem; color: #c4e9d3; }
 
@@ -151,8 +156,8 @@
   }
 
   @media(max-width:768px){
-    .hero h1 { font-size: 2rem; }
-    .hero p { font-size: 1rem; }
+    .hero-content h1 { font-size: 2rem; }
+    .hero-content p { font-size: 1rem; }
     .events { padding: 2rem 1rem; }
   }
 </style>
@@ -180,10 +185,18 @@
 
 <!-- Hero Section -->
 <section class="hero">
-  <h1>Experience the Future of Events</h1>
-  <p>Book tickets, explore events, and enjoy unforgettable moments with Elyzium.</p>
-  <button class="cta-btn" onclick="document.getElementById('eventsSection').scrollIntoView({behavior:'smooth'})">Browse Events</button>
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-content">
+    <h1>Experience the Future of Events</h1>
+    <p>Book tickets, explore events, and enjoy unforgettable moments with Elyzium.</p>
+    <button class="cta-btn" onclick="document.getElementById('eventsSection').scrollIntoView({behavior:'smooth'})">Browse Events</button>
+  </div>
 </section>
+
+<!-- Search Bar -->
+<div id="searchContainer">
+  <input type="text" id="searchInput" placeholder="Search events...">
+</div>
 
 <!-- Events Section -->
 <section class="events" id="eventsSection"></section>
@@ -198,12 +211,28 @@ import { collection, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/f
 import { db } from "./auth.js"; // Firebase initialization
 
 const eventsContainer = document.querySelector('.events');
+const searchInput = document.getElementById('searchInput');
+let allEvents = []; // store all events for filtering
 
+// Load events from Firebase
 async function loadEvents() {
   const eventsSnap = await getDocs(collection(db, "events"));
+  allEvents = [];
   eventsContainer.innerHTML = '';
   eventsSnap.forEach(doc => {
-    const event = doc.data();
+    const event = { id: doc.id, ...doc.data() };
+    allEvents.push(event);
+  });
+  displayEvents(allEvents);
+}
+
+function displayEvents(events) {
+  eventsContainer.innerHTML = '';
+  if (events.length === 0) {
+    eventsContainer.innerHTML = "<p style='text-align:center;'>No events found.</p>";
+    return;
+  }
+  events.forEach(event => {
     const card = document.createElement('div');
     card.classList.add('event-card');
     card.innerHTML = `
@@ -214,11 +243,18 @@ async function loadEvents() {
       </div>
     `;
     card.addEventListener('click', () => {
-      window.location.href = `home.html?id=${doc.id}`;
+      window.location.href = `home.html?id=${event.id}`;
     });
     eventsContainer.appendChild(card);
   });
 }
+
+// Search functionality
+searchInput.addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase();
+  const filtered = allEvents.filter(ev => ev.title.toLowerCase().includes(query));
+  displayEvents(filtered);
+});
 
 loadEvents();
 
@@ -235,6 +271,73 @@ hamburger.addEventListener('click', () => {
 menuOverlay.addEventListener('click', () => {
   navLinks.classList.remove('show');
   menuOverlay.classList.remove('show');
+});
+
+// Futuristic Hero Animation
+const canvas = document.getElementById('heroCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = document.querySelector('.hero').offsetHeight;
+
+const particles = [];
+const particleCount = 120;
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 2 + 1;
+    this.speedX = Math.random() * 0.5 - 0.25;
+    this.speedY = Math.random() * 0.5 - 0.25;
+    this.color = 'rgba(0,255,204,0.7)';
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+
+function animateParticles() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+  // Draw lines between close particles
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i+1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const distance = Math.sqrt(dx*dx + dy*dy);
+      if (distance < 100) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(0,255,204,${1-distance/100})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateParticles);
+}
+
+animateParticles();
+
+// Resize canvas on window resize
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = document.querySelector('.hero').offsetHeight;
 });
 </script>
 
