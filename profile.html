@@ -267,35 +267,53 @@ profileUpload.addEventListener('change', e => {
 
 saveBtn.addEventListener('click', async () => {
   if(!currentUser) return;
+  
+  saveBtn.disabled = true;                // Disable button
+  saveBtn.style.opacity = 0.6;            // Optional: visually indicate disabled state
   const docRef = doc(db, "admins", currentUser.uid);
   let imgUrl = null;
   progressContainer.style.display='block';
   progressBar.style.width='0%';
+
   try {
     if(newProfileFile){
       const formData = new FormData();
       formData.append("image", newProfileFile);
-      let progress=0;
-      const interval = setInterval(()=>{if(progress<80) progress+=5; progressBar.style.width=progress+'%';},100);
-      const res = await fetch(`https://api.imgbb.com/1/upload?key=b39809d92fb65ba3d028be78ec1db78c`, {method:'POST', body:formData});
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        if(progress < 80) progress += 5;
+        progressBar.style.width = progress + '%';
+      }, 100);
+
+      const res = await fetch(`https://api.imgbb.com/1/upload?key=b39809d92fb65ba3d028be78ec1db78c`, {
+        method: 'POST',
+        body: formData
+      });
+
       clearInterval(interval);
       const result = await res.json();
       if(!result.success) throw new Error('Upload failed');
-      imgUrl=result.data.url;
-      progressBar.style.width='100%';
-    }else{
-      progressBar.style.width='50%';
+      imgUrl = result.data.url;
+      progressBar.style.width = '100%';
+    } else {
+      progressBar.style.width = '50%';
     }
-    const updateData={name:nameInput.value};
-    if(imgUrl) updateData.profilePicUrl=imgUrl;
-    await updateDoc(docRef,updateData);
-    progressBar.style.width='100%';
-    setTimeout(()=>progressContainer.style.display='none',500);
+
+    const updateData = { name: nameInput.value };
+    if(imgUrl) updateData.profilePicUrl = imgUrl;
+    await updateDoc(docRef, updateData);
+
+    progressBar.style.width = '100%';
+    setTimeout(() => progressContainer.style.display = 'none', 500);
     showToast("Profile updated successfully!");
-  }catch(err){
+  } catch(err) {
     console.error(err);
-    progressContainer.style.display='none';
+    progressContainer.style.display = 'none';
     showToast("Error updating profile", "#e74c3c");
+  } finally {
+    saveBtn.disabled = false;             // Re-enable button
+    saveBtn.style.opacity = 1;
   }
 });
 
