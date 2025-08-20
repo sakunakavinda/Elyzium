@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
 <title>Elyzium Events - Home</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -21,7 +22,7 @@
     background: rgba(0,0,0,0.7);
     backdrop-filter: blur(10px);
   }
-  .logo { font-size: 1.8rem; font-weight: 700; color: #00ffcc; letter-spacing: 2px; }
+  .logo { font-size: 1.8rem; font-weight: 700; color: #00ffaa; letter-spacing: 2px; }
   .nav-links { display: flex; align-items: center; }
   .nav-links a {
     color: #fff;
@@ -35,6 +36,9 @@
   /* Hamburger menu */
   #hamburger { display: none; flex-direction: column; cursor: pointer; gap: 5px; }
   #hamburger div { width: 25px; height: 3px; background: #00ffcc; transition: 0.3s; }
+
+  footer .social-icons a { color: #00ffcc; margin: 0 8px; text-decoration: none; }
+footer .social-icons a:hover { color: #1af45f; }
 
   /* Overlay for blur effect */
   #menuOverlay {
@@ -94,7 +98,7 @@
   }
   .hero-content h1 {
     font-size: 3rem;
-    color: #ffffff;
+    color: #2ae856;
     margin-bottom: 1rem;
     text-shadow: 0 0 20px #00ffae;
   }
@@ -103,8 +107,8 @@
     padding: 14px 36px;
     font-size: 1.1rem;
     font-weight: 600;
-    color: #000;
-    background: #00ffcc;
+    color: #ffffff;
+    background: #02b860;
     border: none;
     border-radius: 50px;
     cursor: pointer;
@@ -204,6 +208,17 @@
 <!-- Footer -->
 <footer>
   &copy; 2025 Elyzium Events. All Rights Reserved.
+  <div class="contact-details" style="margin-bottom: 1rem;">
+    <p><strong>Contact Us:</strong></p>
+    <p>Email: elyziumevent@gmail.com</p>
+    <p>Phone: +94 71 653 1817</p>
+    <div class="social-icons" style="margin-top: 8px;">
+      <a href="https://www.instagram.com/sakunakavindaa/?next=%2F" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.facebook.com/tadashi.hamada.16940" target="_blank"><i class="fab fa-facebook"></i></a>
+      <a href="https://wa.me/94716531817" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      <a href="mailto:elyziumevent@gmail.com"><i class="fas fa-envelope"></i></a>
+    </div>
+  </div>
 </footer>
 
 <script type="module">
