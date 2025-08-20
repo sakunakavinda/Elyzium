@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Event Details</title>
 <style>
-  /* Body & general styles */
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     background: #000000;
+    color: #333;
   }
 
   /* Header */
   header {
-   background-color: #031508;
-    color: white;
+    background-color: #031006;
+    color: #ffffff;
     padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
@@ -33,7 +33,7 @@
     margin: 0.3rem 0;
   }
 
-  /* Main container */
+  /* Container */
   .container {
     max-width: 900px;
     margin: 2rem auto;
@@ -42,41 +42,43 @@
 
   /* Event title */
   #eventTitle {
-    color: #1d8240;
+    color: #e1f3e7;
     text-align: center;
     margin-bottom: 1.5rem;
     word-wrap: break-word;
   }
 
-  /* Table container for responsive scroll */
-  .table-wrapper {
+  /* Table container */
+  .table-container {
+    background: white;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     overflow-x: auto;
   }
 
-  /* Table */
   table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    min-width: 500px;
+    min-width: 600px;
   }
 
   th, td {
-    padding: 1rem;
+    padding: 0.8rem 1rem;
     text-align: left;
-    border-bottom: 1px solid #ddd;
   }
 
   th {
     background-color: #f0f0f0;
-    font-weight: bold;
+    font-weight: 600;
   }
 
-  tr:hover td {
-    background-color: #f9f9f9;
+  tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  tr:hover {
+    background-color: #f1f9f1;
   }
 
   /* Delete button */
@@ -98,66 +100,44 @@
     transform: translateY(-2px);
   }
 
-  /* Responsive adjustments */
+  /* Responsive */
   @media (max-width: 768px) {
     header {
       flex-direction: column;
       align-items: flex-start;
     }
 
-    header h1 {
-      margin-bottom: 0.5rem;
-    }
-
-    .container {
-      padding: 0 1rem;
-    }
-
-    th, td {
-      padding: 0.6rem;
-      font-size: 0.9rem;
-    }
-
-    #deleteEventBtn {
-      padding: 0.7rem 1rem;
-      font-size: 0.95rem;
-    }
+    .container { padding: 0 1rem; }
+    th, td { padding: 0.6rem; font-size: 0.9rem; }
+    #deleteEventBtn { padding: 0.7rem 1rem; font-size: 0.95rem; }
   }
 
   @media (max-width: 480px) {
-    th, td {
-      padding: 0.5rem;
-      font-size: 0.85rem;
-    }
-
-    #eventTitle {
-      font-size: 1.3rem;
-    }
-
-    #deleteEventBtn {
-      width: 100%;
-      font-size: 0.9rem;
-    }
+    th, td { padding: 0.5rem; font-size: 0.85rem; }
+    #eventTitle { font-size: 1.3rem; }
+    #deleteEventBtn { width: 100%; font-size: 0.9rem; }
   }
 </style>
 </head>
 <body>
-  <header>
+<header>
+  <div>
     <h1>Elyzium Admin</h1>
-    <span id="adminName"></span>
-  </header>
-
-  <div class="container">
-    <h1 id="eventTitle">Event Name</h1>
-
-    <div class="table-wrapper">
-      <table id="ticketTable">
-        <!-- Ticket types filled dynamically -->
-      </table>
-    </div>
-
-    <button id="deleteEventBtn">Delete Event</button>
+    <span id="adminName" style="font-size:0.9rem; color:#a8d5a8; display:block; margin-top:4px;"></span>
   </div>
+</header>
+
+<div class="container">
+  <h1 id="eventTitle">Event Name</h1>
+
+  <div class="table-container">
+    <table id="ticketTable">
+      <!-- Ticket types filled dynamically -->
+    </table>
+  </div>
+
+  <button id="deleteEventBtn">Delete Event</button>
+</div>
 
 <script type="module">
   import { getFirestore, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
@@ -189,7 +169,7 @@
 
     // Build ticket types table
     const ticketTypes = event.ticketTypes || {};
-    let html = "<tr><th>Ticket Type</th><th>Price (LKR)</th><th>Quantity</th><th>Issued</th><th>Remaining</th></tr>";
+    let html = "<thead><tr><th>Ticket Type</th><th>Price (LKR)</th><th>Quantity</th><th>Issued</th><th>Remaining</th></tr></thead><tbody>";
 
     for (const [type, data] of Object.entries(ticketTypes)) {
       const totalQuantity = data.quantity || 0;
@@ -205,6 +185,7 @@
                 <td>${remaining}</td>
                </tr>`;
     }
+    html += "</tbody>";
     ticketTable.innerHTML = html;
 
     // Delete event functionality
