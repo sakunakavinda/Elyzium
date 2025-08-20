@@ -147,7 +147,7 @@ async function loadEventDetails() {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
         const event = docSnap.data();
-        document.getElementById("eventCover").src = event.flyerUrl || "images/default-event.png";
+        document.getElementById("eventCover").src = event.flyerUrl || "Loading the flyer...";
         document.getElementById("eventDescription").textContent = event.description || "No description available.";
         document.getElementById("eventDate").textContent = event.date || "Not scheduled";
         document.getElementById("eventTime").textContent = event.time || "Not scheduled";
