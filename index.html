@@ -1,237 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ELYZIUM Events</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ELYZIUM Events</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+}
 
-    html, body {
-      height: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden;
-      background: #000;
-      color: white;
-    }
+.hero-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
 
-    .hero-container {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      overflow: hidden;
-    }
+#bgCanvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  background: radial-gradient(circle at center, #001a00, #000000 80%);
+}
 
-    /* Animated particle canvas */
-    #bgCanvas {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 0;
-      background: radial-gradient(circle at center, #003300, #001a00, #000);
-    }
+.overlay {
+  position: relative;
+  z-index: 2;
+  padding: 0 20px;
+}
 
-    .overlay {
-      position: relative;
-      z-index: 2;
-    }
+.title {
+  font-size: 4rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(0,255,204,0.8), 0 0 40px rgba(0,255,204,0.5);
+  animation: glowPulse 3s infinite alternate;
+}
 
-    .title {
-      font-size: 3.5rem;
-      font-weight: 800;
-      letter-spacing: 3px;
-      text-shadow: 0 0 20px rgba(0,255,100,0.8);
-      animation: glowPulse 3s infinite alternate;
-      color: #00ff66;
-    }
+@keyframes glowPulse {
+  from { text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc; }
+  to   { text-shadow: 0 0 30px #00ffcc, 0 0 60px #00ffcc; }
+}
 
-    @keyframes glowPulse {
-      from { text-shadow: 0 0 10px #00ff66, 0 0 20px #00ff66; }
-      to   { text-shadow: 0 0 30px #00ff66, 0 0 60px #00ff66; }
-    }
+.buttons {
+  margin-top: 30px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
 
-    .buttons {
-      margin-top: 30px;
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+.btn {
+  padding: 16px 36px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 50px;
+  color: #00ffcc;
+  background: rgba(0,255,204,0.05);
+  border: 1px solid rgba(0,255,204,0.4);
+  cursor: pointer;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 20px rgba(0,255,204,0.1);
+}
+.btn:hover {
+  background: #00ffcc;
+  color: #000;
+  box-shadow: 0 0 40px #00ffcc;
+}
 
-    .btn {
-      padding: 16px 32px;
-      font-size: 1.2rem;
-      font-weight: 600;
-      border: 2px solid #ffffff;
-      border-radius: 50px;
-      color: #c4e9d3;
-      background: transparent;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(6px);
-    }
+#adminBtn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(0,255,204,0.6);
+  border-radius: 12px;
+  color: #00ffcc;
+  background: rgba(0,0,0,0.25);
+  cursor: pointer;
+  text-decoration: none;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+#adminBtn:hover {
+  background: #00ffcc;
+  color: #000;
+  box-shadow: 0 0 20px #00ffcc;
+  border: none;
+}
 
-    .btn:hover {
-      background: #00ff66;
-      color: #000;
-      box-shadow: 0 0 20px #00ff66;
-      border: none;
-    }
-
-    /* Minimalistic Admin Login button pinned to upper-right corner */
-    #adminBtn {
-      position: fixed; /* use fixed to always stay on top-right */
-      top: 20px;
-      right: 20px;
-      padding: 6px 12px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      border: 1px solid #00ff66;
-      border-radius: 8px;
-      color: #00ff66;
-      background: rgba(0,0,0,0.3);
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      z-index: 10;
-    }
-
-    #adminBtn:hover {
-      background: #00ff66;
-      color: #000;
-      box-shadow: 0 0 10px #00ff66;
-      border: none;
-    }
-
-    @media (max-width: 768px) {
-      .title { font-size: 2.5rem; }
-      .btn { font-size: 1rem; padding: 12px 24px; }
-      #adminBtn { padding: 5px 10px; font-size: 0.75rem; }
-    }
-  </style>
+@media (max-width: 768px) {
+  .title { font-size: 2.5rem; }
+  .btn { font-size: 1rem; padding: 12px 28px; }
+  #adminBtn { padding: 5px 10px; font-size: 0.75rem; }
+}
+</style>
 </head>
 <body>
-  <div class="hero-container">
-    <canvas id="bgCanvas"></canvas>
-    <div class="overlay">
-      <div class="title">ELYZIUM EVENTS</div>
-      <div class="buttons">
-        <a href="home.html" class="btn">Get Started</a>
-      </div>
+
+<div class="hero-container">
+  <canvas id="bgCanvas"></canvas>
+  <div class="overlay">
+    <div class="title">ELYZIUM EVENTS</div>
+    <div class="buttons">
+      <a href="home.html" class="btn">Dive In</a>
     </div>
-    <!-- Admin Login button moved outside overlay -->
-    <a href="#" id="adminBtn">Admin Login</a>
   </div>
+  <a href="#" id="adminBtn">Admin</a>
+</div>
 
-  <script>
-    const canvas = document.getElementById("bgCanvas");
-    const ctx = canvas.getContext("2d");
-    let particlesArray;
+<script>
+const canvas = document.getElementById("bgCanvas");
+const ctx = canvas.getContext("2d");
+let particlesArray;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+const mouse = { x: null, y: null, radius: 150 };
+window.addEventListener("mousemove", (e) => { mouse.x = e.x; mouse.y = e.y; });
 
-    const mouse = { x: null, y: null, radius: 150 };
+class Particle {
+  constructor(x, y, dx, dy, size, color){
+    this.x = x; this.y = y;
+    this.dx = dx; this.dy = dy;
+    this.size = size;
+    this.color = color;
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
+  update(){
+    const centerX = canvas.width/2;
+    const centerY = canvas.height/2;
+    const zoomSpeed = 0.6;
+    this.x += (this.x - centerX) * zoomSpeed / 500;
+    this.y += (this.y - centerY) * zoomSpeed / 500;
+    this.size += 0.03;
 
-    window.addEventListener("mousemove", function(event) {
-      mouse.x = event.x;
-      mouse.y = event.y;
-    });
+    if(this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height){
+      this.x = Math.random()*canvas.width;
+      this.y = Math.random()*canvas.height;
+      this.size = (Math.random()*3)+1;
+    }
 
-    class Particle {
-      constructor(x, y, dx, dy, size, color) {
-        this.x = x;
-        this.y = y;
-        this.dx = dx;
-        this.dy = dy;
-        this.size = size;
-        this.color = color;
-      }
-      draw() {
+    let dx = mouse.x - this.x;
+    let dy = mouse.y - this.y;
+    let distance = Math.sqrt(dx*dx + dy*dy);
+    if(distance < mouse.radius){
+      this.x -= dx/10; this.y -= dy/10;
+    }
+    this.draw();
+  }
+}
+
+function init(){
+  particlesArray=[];
+  let numParticles = (canvas.width*canvas.height)/9000;
+  for(let i=0;i<numParticles;i++){
+    let size=(Math.random()*3)+1;
+    let x=Math.random()*(canvas.width-size*2)+size;
+    let y=Math.random()*(canvas.height-size*2)+size;
+    let dx=(Math.random()-0.5)*1.5;
+    let dy=(Math.random()-0.5)*1.5;
+    let color="rgba(0,255,204,0.7)";
+    particlesArray.push(new Particle(x,y,dx,dy,size,color));
+  }
+}
+
+function connect(){
+  for(let a=0;a<particlesArray.length;a++){
+    for(let b=a;b<particlesArray.length;b++){
+      let dx=particlesArray[a].x - particlesArray[b].x;
+      let dy=particlesArray[a].y - particlesArray[b].y;
+      let distance=dx*dx + dy*dy;
+      if(distance < (canvas.width/7)*(canvas.height/7)){
+        ctx.strokeStyle="rgba(0,255,204,0.08)";
+        ctx.lineWidth=1;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-      }
-      update() {
-        if (this.x + this.size > canvas.width || this.x - this.size < 0) this.dx = -this.dx;
-        if (this.y + this.size > canvas.height || this.y - this.size < 0) this.dy = -this.dy;
-        this.x += this.dx;
-        this.y += this.dy;
-
-        let dx = mouse.x - this.x;
-        let dy = mouse.y - this.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < mouse.radius) {
-          this.x -= dx / 10;
-          this.y -= dy / 10;
-        }
-        this.draw();
+        ctx.moveTo(particlesArray[a].x,particlesArray[a].y);
+        ctx.lineTo(particlesArray[b].x,particlesArray[b].y);
+        ctx.stroke();
       }
     }
+  }
+}
 
-    function init() {
-      particlesArray = [];
-      let numberOfParticles = (canvas.width * canvas.height) / 9000;
-      for (let i = 0; i < numberOfParticles; i++) {
-        let size = (Math.random() * 3) + 1;
-        let x = Math.random() * (canvas.width - size * 2) + size;
-        let y = Math.random() * (canvas.height - size * 2) + size;
-        let dx = (Math.random() - 0.5) * 1.5;
-        let dy = (Math.random() - 0.5) * 1.5;
-        let color = "rgba(0,255,100,0.7)";
-        particlesArray.push(new Particle(x, y, dx, dy, size, color));
-      }
-    }
+function animate(){
+  requestAnimationFrame(animate);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let i=0;i<particlesArray.length;i++) particlesArray[i].update();
+  connect();
+}
 
-    function connect() {
-      for (let a = 0; a < particlesArray.length; a++) {
-        for (let b = a; b < particlesArray.length; b++) {
-          let dx = particlesArray[a].x - particlesArray[b].x;
-          let dy = particlesArray[a].y - particlesArray[b].y;
-          let distance = dx * dx + dy * dy;
-          if (distance < (canvas.width/7) * (canvas.height/7)) {
-            ctx.strokeStyle = "rgba(0,255,100,0.1)";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-            ctx.stroke();
-          }
-        }
-      }
-    }
+window.addEventListener("resize", ()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  init();
+});
 
-    function animate() {
-      requestAnimationFrame(animate);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < particlesArray.length; i++) particlesArray[i].update();
-      connect();
-    }
+window.addEventListener("mouseout", ()=>{ mouse.x = undefined; mouse.y = undefined; });
 
-    window.addEventListener("resize", function() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      init();
-    });
+init();
+animate();
 
-    window.addEventListener("mouseout", function() { mouse.x = undefined; mouse.y = undefined; });
+document.getElementById("adminBtn").addEventListener("click",(e)=>{
+  e.preventDefault();
+  window.location.replace("admin-login.html");
+});
+</script>
 
-    init();
-    animate();
-
-    document.getElementById("adminBtn").addEventListener("click", function(e) {
-      e.preventDefault();
-      window.location.replace("admin-login.html");
-    });
-  </script>
 </body>
 </html>
