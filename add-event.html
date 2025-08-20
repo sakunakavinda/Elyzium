@@ -22,7 +22,7 @@
   .form-container {
     max-width: 600px;
     margin: 2rem auto;
-    background: #fff;
+   background: #1c1c1e;
     padding: 2.5rem 2rem;
     border-radius: 12px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
@@ -34,7 +34,7 @@
   }
 
   h2 {
-    color: #1d8240;
+    color: #fff;
     margin-bottom: 1.5rem;
     font-size: 1.8rem;
     text-align: center;
@@ -44,24 +44,26 @@
     display: block;
     margin-top: 1.2rem;
     font-weight: 600;
-    color: #555;
+    color: #d2d2d2;
     font-size: 0.95rem;
   }
 
   input, textarea, select {
     width: 100%;
-    padding: 0.8rem 1rem;
+    padding: 12px 14px;
     margin-top: 0.4rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+ border: none;
+    background: #2c2c2e;
+    color: #fff;
+    border-radius: 12px;
     font-size: 0.95rem;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
   input:focus, textarea:focus, select:focus {
     outline: none;
-    border-color: #1d8240;
-    box-shadow: 0 0 5px rgba(29, 130, 64, 0.4);
+    border-color: #2ab95c;
+    box-shadow: 0 0 5px rgba(18, 228, 91, 0.623);
   }
 
   input[type="file"] {
@@ -126,19 +128,19 @@
   <input type="text" id="venue" placeholder="Enter venue">
 
   <label>Ticket Price (Type 1)</label>
-<input type="number" id="type1" placeholder="Price in LKR">
+<input type="int" id="type1" placeholder="Price in LKR">
 
 <label>Number of Tickets (Type 1)</label>
 <input type="number" id="qty1" placeholder="Quantity">
 
 <label>Ticket Price (Type 2)</label>
-<input type="number" id="type2" placeholder="Price in LKR">
+<input type="int" id="type2" placeholder="Price in LKR">
 
 <label>Number of Tickets (Type 2)</label>
 <input type="number" id="qty2" placeholder="Quantity">
 
 <label>Ticket Price (Type 3)</label>
-<input type="number" id="type3" placeholder="Price in LKR">
+<input type="int" id="type3" placeholder="Price in LKR">
 
 <label>Number of Tickets (Type 3)</label>
 <input type="number" id="qty3" placeholder="Quantity">

@@ -20,7 +20,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ImgBB API key
-const imgbbAPIKey = "b39809d92fb65ba3d028be78ec1db78c";
+const imgbbAPIKey = "fd2ccc747be81c79cc64af5ee7c73d72";
 
 const saveEventBtn = document.getElementById("saveEventBtn");
 const msg = document.getElementById("msg");
