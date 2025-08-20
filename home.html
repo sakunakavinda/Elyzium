@@ -93,7 +93,7 @@ footer .social-icons a:hover { color: #fff; }
                     <p><strong>Venue:</strong> <span id="eventVenue">Not scheduled</span></p>
                     <p><strong>Event By:</strong> <span id="eventOrganizer">Elyzium Events</span></p>
                 </div>
-                <button id="contactDetailsBtn">Contact for more details</button>
+                <button id="contactDetailsBtn">Contact Organizer</button>
             </div>
 
             <!-- Ticket Categories -->
@@ -176,7 +176,11 @@ async function loadEventDetails() {
             window.location.href = `buy.html?id=${eventId}`;
         };
         document.getElementById("contactDetailsBtn").onclick = () => {
-            window.open(event.contactUrl || "https://wa.me/94716531817");
+            if (event.contact && event.contact.trim() !== "") {
+        window.open(event.contact);
+    } else {
+        alert("No contact information available.");
+    }
         };
 
     } else {

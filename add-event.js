@@ -62,6 +62,7 @@ saveEventBtn.addEventListener("click", async () => {
   const venue = document.getElementById("venue").value.trim();
   const organizer = document.getElementById("organizer").value.trim();
   const flyerFile = document.getElementById("flyer").files[0];
+  const contact = document.getElementById("contact").value;
 
   // Collect ticket types dynamically
   const ticketTypes = [];
@@ -116,6 +117,7 @@ saveEventBtn.addEventListener("click", async () => {
       organizer: organizer,
       ticketTypes: ticketTypes, // dynamic array
       flyerUrl: flyerUrl,
+      contact: `https://wa.me/${contact}`,
       createdAt: serverTimestamp()
     });
 
