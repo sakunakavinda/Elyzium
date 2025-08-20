@@ -6,7 +6,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
 <title>Elyzium Events - Home</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
   body { background: #000; color: #fff; overflow-x: hidden; }
 
   /* Navbar */
@@ -36,9 +36,6 @@
   /* Hamburger menu */
   #hamburger { display: none; flex-direction: column; cursor: pointer; gap: 5px; }
   #hamburger div { width: 25px; height: 3px; background: #00ffcc; transition: 0.3s; }
-
-  footer .social-icons a { color: #00ffcc; margin: 0 8px; text-decoration: none; }
-footer .social-icons a:hover { color: #1af45f; }
 
   /* Overlay for blur effect */
   #menuOverlay {
@@ -98,7 +95,7 @@ footer .social-icons a:hover { color: #1af45f; }
   }
   .hero-content h1 {
     font-size: 3rem;
-    color: #2ae856;
+    color: #c2ffd0;
     margin-bottom: 1rem;
     text-shadow: 0 0 20px #00ffae;
   }
@@ -149,20 +146,32 @@ footer .social-icons a:hover { color: #1af45f; }
   .event-card .content h3 { color: #00ffcc; margin-bottom: 0.5rem; }
   .event-card .content p { font-size: 0.9rem; color: #c4e9d3; }
 
+  /* About Section */
+  #aboutSection {
+    padding: 4rem 2rem;
+    background: #111;
+    text-align: center;
+  }
+  #aboutSection h2 { font-size: 2.5rem; color: #00ff51; margin-bottom: 1rem; }
+  #aboutSection p { font-size: 1.1rem; color: #c4e9d3; max-width: 800px; margin: 0 auto; }
+
   /* Footer */
   footer {
     background: #000;
-    color: #00ffcc;
+    color: #99feaf;
     text-align: center;
     padding: 2rem 1rem;
     margin-top: 2rem;
     font-size: 0.9rem;
   }
+  footer .social-icons a { color: #00ffcc; margin: 0 8px; text-decoration: none; }
+  footer .social-icons a:hover { color: #1af45f; }
 
   @media(max-width:768px){
     .hero-content h1 { font-size: 2rem; }
     .hero-content p { font-size: 1rem; }
     .events { padding: 2rem 1rem; }
+    #aboutSection { padding: 2rem 1rem; }
   }
 </style>
 </head>
@@ -177,9 +186,9 @@ footer .social-icons a:hover { color: #1af45f; }
     <div></div>
   </div>
   <div class="nav-links" id="navLinks">
-    <a href="#eventsSection">Events</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
+    <a href="#" data-scroll="eventsSection">Events</a>
+    <a href="#" data-scroll="aboutSection">About</a>
+    <a href="#" data-scroll="footer">Contact</a>
     <a href="login.html">Login</a>
   </div>
 </nav>
@@ -205,10 +214,16 @@ footer .social-icons a:hover { color: #1af45f; }
 <!-- Events Section -->
 <section class="events" id="eventsSection"></section>
 
+<!-- About Section -->
+<section id="aboutSection">
+  <h2>About Elyzium Events</h2>
+  <p>Elyzium Events is dedicated to creating unforgettable experiences. We organize events, manage ticketing, and provide a seamless platform for discovering the best entertainment in your city. Join us and be part of the future of events!</p>
+</section>
+
 <!-- Footer -->
-<footer>
+<footer id="footer">
   &copy; 2025 Elyzium Events. All Rights Reserved.
-  <div class="contact-details" style="margin-bottom: 1rem;">
+  <div class="contact-details" style="margin-top: 1rem;">
     <p><strong>Contact Us:</strong></p>
     <p>Email: elyziumevent@gmail.com</p>
     <p>Phone: +94 71 653 1817</p>
@@ -273,7 +288,7 @@ searchInput.addEventListener('input', (e) => {
 
 loadEvents();
 
-// Hamburger toggle
+// Hamburger menu
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
 const menuOverlay = document.getElementById('menuOverlay');
@@ -282,13 +297,26 @@ hamburger.addEventListener('click', () => {
   navLinks.classList.toggle('show');
   menuOverlay.classList.toggle('show');
 });
-
 menuOverlay.addEventListener('click', () => {
   navLinks.classList.remove('show');
   menuOverlay.classList.remove('show');
 });
 
-// Futuristic Hero Animation
+// Smooth scroll links without caching
+document.querySelectorAll('.nav-links a[data-scroll]').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const targetId = link.getAttribute('data-scroll');
+    const targetEl = document.getElementById(targetId);
+    if(targetEl) {
+      targetEl.scrollIntoView({ behavior: 'smooth' });
+    }
+    navLinks.classList.remove('show');
+    menuOverlay.classList.remove('show');
+  });
+});
+
+// Hero animation
 const canvas = document.getElementById('heroCanvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -296,7 +324,6 @@ canvas.height = document.querySelector('.hero').offsetHeight;
 
 const particles = [];
 const particleCount = 120;
-
 class Particle {
   constructor() {
     this.x = Math.random() * canvas.width;
@@ -309,52 +336,39 @@ class Particle {
   update() {
     this.x += this.speedX;
     this.y += this.speedY;
-    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+    if(this.x<0 || this.x>canvas.width) this.speedX*=-1;
+    if(this.y<0 || this.y>canvas.height) this.speedY*=-1;
   }
   draw() {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-    ctx.fillStyle = this.color;
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fillStyle=this.color;
     ctx.fill();
   }
 }
-
-for (let i = 0; i < particleCount; i++) particles.push(new Particle());
-
-function animateParticles() {
+for(let i=0;i<particleCount;i++) particles.push(new Particle());
+function animateParticles(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p => {
-    p.update();
-    p.draw();
-  });
-  // Draw lines between close particles
-  for (let i = 0; i < particles.length; i++) {
-    for (let j = i+1; j < particles.length; j++) {
-      const dx = particles[i].x - particles[j].x;
-      const dy = particles[i].y - particles[j].y;
-      const distance = Math.sqrt(dx*dx + dy*dy);
-      if (distance < 100) {
+  particles.forEach(p=>{p.update();p.draw();});
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x;
+      const dy=particles[i].y-particles[j].y;
+      const distance=Math.sqrt(dx*dx+dy*dy);
+      if(distance<100){
         ctx.beginPath();
-        ctx.strokeStyle = `rgba(0,255,204,${1-distance/100})`;
-        ctx.lineWidth = 0.5;
-        ctx.moveTo(particles[i].x, particles[i].y);
-        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle=`rgba(0,255,204,${1-distance/100})`;
+        ctx.lineWidth=0.5;
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
         ctx.stroke();
       }
     }
   }
   requestAnimationFrame(animateParticles);
 }
-
 animateParticles();
-
-// Resize canvas on window resize
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = document.querySelector('.hero').offsetHeight;
-});
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=document.querySelector('.hero').offsetHeight;});
 </script>
-
 </body>
 </html>
