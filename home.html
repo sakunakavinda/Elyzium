@@ -77,7 +77,7 @@ footer .social-icons a:hover { color: #fff; }
 
     <!-- Cover Image -->
     <div class="cover-image">
-        <img id="eventCover" src="images/default-event.png">
+        <img id="eventCover" src="images/default-event.png" alt="Event Cover">
     </div>
 
     <!-- Event Details -->
@@ -99,16 +99,7 @@ footer .social-icons a:hover { color: #fff; }
             <!-- Ticket Categories -->
             <div class="ticket-categories">
                 <h2>Ticket Prices</h2>
-                <div class="ticket">
-                    <p>Picnic Mat Seating</p>
-                    <p class="price" id="priceMat">1000 LKR</p>
-                </div>
-                <hr class="ticket-divider">
-                <div class="ticket">
-                    <p>Camping Chair Seating</p>
-                    <p class="price" id="priceChair">1500 LKR</p>
-                </div>
-                <hr class="ticket-divider">
+                <div id="ticketsList"></div>
                 <button id="buyTicketsBtn">Buy Tickets</button>
             </div>
         </section>
@@ -122,10 +113,10 @@ footer .social-icons a:hover { color: #fff; }
         <p>Email: elyziumevent@gmail.com</p>
         <p>Phone: +94 71 653 1817</p>
         <div class="social-icons">
-            <a href="https://www.instagram.com/sakunakavindaa/?next=%2F" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.facebook.com/tadashi.hamada.16940" target="_blank" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-            <a href="https://wa.me/94716531817" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-            <a href="mailto:elyziumevent@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            <a href="https://www.instagram.com/sakunakavindaa/?next=%2F" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.facebook.com/tadashi.hamada.16940" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://wa.me/94716531817" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="mailto:elyziumevent@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
     </div>
 </footer>
@@ -145,23 +136,49 @@ async function loadEventDetails() {
 
     const docRef = doc(db, "events", eventId);
     const docSnap = await getDoc(docRef);
+
     if (docSnap.exists()) {
         const event = docSnap.data();
-        document.getElementById("eventCover").src = event.flyerUrl || "Loading the flyer...";
+
+        document.getElementById("eventCover").src = event.flyerUrl || "images/default-event.png";
         document.getElementById("eventDescription").textContent = event.description || "No description available.";
         document.getElementById("eventDate").textContent = event.date || "Not scheduled";
         document.getElementById("eventTime").textContent = event.time || "Not scheduled";
         document.getElementById("eventVenue").textContent = event.venue || "Not scheduled";
         document.getElementById("eventOrganizer").textContent = event.organizer || "Elyzium Events";
-        document.getElementById("priceMat").textContent = event.priceMat ? `${event.priceMat} LKR` : "1000 LKR";
-        document.getElementById("priceChair").textContent = event.priceChair ? `${event.priceChair} LKR` : "1500 LKR";
 
+        // Dynamically render tickets
+        const ticketsList = document.getElementById("ticketsList");
+        ticketsList.innerHTML = "";
+
+        if (event.ticketTypes && Array.isArray(event.ticketTypes)) {
+            event.ticketTypes.forEach(ticket => {
+                if (ticket.name && ticket.price) {
+                    const div = document.createElement("div");
+                    div.className = "ticket";
+                    div.innerHTML = `
+                        <p>${ticket.name}</p>
+                        <p class="price">${ticket.price} LKR</p>
+                    `;
+                    ticketsList.appendChild(div);
+
+                    const hr = document.createElement("hr");
+                    hr.className = "ticket-divider";
+                    ticketsList.appendChild(hr);
+                }
+            });
+        } else {
+            ticketsList.innerHTML = "<p>No tickets available</p>";
+        }
+
+        // Buttons
         document.getElementById("buyTicketsBtn").onclick = () => {
             window.location.href = `buy.html?id=${eventId}`;
-        }
+        };
         document.getElementById("contactDetailsBtn").onclick = () => {
             window.open(event.contactUrl || "https://wa.me/94716531817");
-        }
+        };
+
     } else {
         alert("Event not found!");
     }

@@ -24,8 +24,10 @@ const imgbbAPIKey = "fd2ccc747be81c79cc64af5ee7c73d72";
 
 const saveEventBtn = document.getElementById("saveEventBtn");
 const msg = document.getElementById("msg");
+const ticketTypesContainer = document.getElementById("ticketTypes");
+const addTicketTypeBtn = document.getElementById("addTicketTypeBtn");
 
-// Create progress bar dynamically
+// Progress bar
 let progressBar = document.createElement("progress");
 progressBar.value = 0;
 progressBar.max = 100;
@@ -33,35 +35,65 @@ progressBar.style.display = "none";
 progressBar.style.marginTop = "10px";
 saveEventBtn.parentNode.appendChild(progressBar);
 
+// Add new ticket type dynamically
+addTicketTypeBtn.addEventListener("click", () => {
+  const div = document.createElement("div");
+  div.classList.add("ticket-type");
+
+  div.innerHTML = `
+    <label>Category Name</label>
+    <input type="text" class="ticket-name" placeholder="e.g. VIP">
+
+    <label>Price</label>
+    <input type="number" class="ticket-price" placeholder="Enter price">
+
+    <label>Quantity</label>
+    <input type="number" class="ticket-qty" placeholder="Enter quantity">
+  `;
+
+  ticketTypesContainer.appendChild(div);
+});
+
+// Save event
 saveEventBtn.addEventListener("click", async () => {
-  const name = document.getElementById("eventName").value;
+  const name = document.getElementById("eventName").value.trim();
   const date = document.getElementById("eventDate").value;
-  const time = document.getElementById("eventTime").value; // new
-  const venue = document.getElementById("venue").value;
-  const organizer = document.getElementById("organizer").value; // new
-
-  const type1 = document.getElementById("type1").value;
-  const type2 = document.getElementById("type2").value;
-  const type3 = document.getElementById("type3").value;
-
-  const qty1 = document.getElementById("qty1").value;
-  const qty2 = document.getElementById("qty2").value;
-  const qty3 = document.getElementById("qty3").value;
-
+  const time = document.getElementById("eventTime").value;
+  const venue = document.getElementById("venue").value.trim();
+  const organizer = document.getElementById("organizer").value.trim();
   const flyerFile = document.getElementById("flyer").files[0];
 
-  if (!name || !date || !time || !venue || !organizer || !type1 || !qty1 || !flyerFile) {
-    msg.textContent = "Please fill all required fields!";
+  // Collect ticket types dynamically
+  const ticketTypes = [];
+  document.querySelectorAll(".ticket-type").forEach((el) => {
+    const typeName = el.querySelector(".ticket-name").value.trim();
+    const typePrice = el.querySelector(".ticket-price").value;
+    const typeQty = el.querySelector(".ticket-qty").value;
+
+    if (typeName && typePrice && typeQty) {
+      ticketTypes.push({
+        name: typeName,
+        price: Number(typePrice),
+        quantity: Number(typeQty)
+      });
+    }
+  });
+
+  // Basic validation
+  if (!name || !date || !time || !venue || !organizer || !flyerFile || ticketTypes.length === 0) {
+    msg.textContent = "⚠️ Please fill all required fields (at least 1 ticket type)!";
+    msg.style.color = "red";
     return;
   }
 
   try {
     saveEventBtn.disabled = true;
     saveEventBtn.textContent = "Saving...";
+    msg.textContent = "";
     progressBar.style.display = "block";
     progressBar.value = 20;
 
-    // Upload flyer
+    // Upload flyer to ImgBB
     const formData = new FormData();
     formData.append("image", flyerFile);
 
@@ -75,27 +107,25 @@ saveEventBtn.addEventListener("click", async () => {
     const flyerUrl = uploadData.data.url;
     progressBar.value = 60;
 
-    // Save event with ticket types, time, and organizer
+    // Save event in Firestore
     await addDoc(collection(db, "events"), {
       title: name,
       date: date,
-      time: time,             // saved
+      time: time,
       venue: venue,
-      organizer: organizer,   // saved
-      ticketTypes: {
-        type1: { price: Number(type1), quantity: Number(qty1) },
-        type2: { price: Number(type2), quantity: Number(qty2) || 0 },
-        type3: { price: Number(type3), quantity: Number(qty3) || 0 }
-      },
+      organizer: organizer,
+      ticketTypes: ticketTypes, // dynamic array
       flyerUrl: flyerUrl,
       createdAt: serverTimestamp()
     });
 
     progressBar.value = 100;
-    alert("Event saved successfully!");
+    alert("✅ Event saved successfully!");
     window.location.href = "admin-dashboard.html";
+
   } catch (error) {
-    msg.textContent = "Error: " + error.message;
+    msg.textContent = "❌ Error: " + error.message;
+    msg.style.color = "red";
   } finally {
     saveEventBtn.disabled = false;
     saveEventBtn.textContent = "Save Event";
