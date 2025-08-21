@@ -49,6 +49,10 @@ addTicketTypeBtn.addEventListener("click", () => {
 
     <label>Quantity</label>
     <input type="number" class="ticket-qty" placeholder="Enter quantity">
+    
+
+    <label>Stripe Product ID</label>
+    <input type="text" class="ticket-product" placeholder="Enter Stripe Product ID">
   `;
 
   ticketTypesContainer.appendChild(div);
@@ -66,19 +70,21 @@ saveEventBtn.addEventListener("click", async () => {
 
   // Collect ticket types dynamically
   const ticketTypes = [];
-  document.querySelectorAll(".ticket-type").forEach((el) => {
-    const typeName = el.querySelector(".ticket-name").value.trim();
-    const typePrice = el.querySelector(".ticket-price").value;
-    const typeQty = el.querySelector(".ticket-qty").value;
+document.querySelectorAll(".ticket-type").forEach((el) => {
+  const typeName = el.querySelector(".ticket-name").value.trim();
+  const typePrice = el.querySelector(".ticket-price").value;
+  const typeQty = el.querySelector(".ticket-qty").value;
+  const productId = el.querySelector(".ticket-product").value.trim();
 
-    if (typeName && typePrice && typeQty) {
-      ticketTypes.push({
-        name: typeName,
-        price: Number(typePrice),
-        quantity: Number(typeQty)
-      });
-    }
-  });
+  if (typeName && typePrice && typeQty && productId) {
+    ticketTypes.push({
+      name: typeName,
+      price: Number(typePrice),
+      quantity: Number(typeQty),
+      productId: productId // new field
+    });
+  }
+});
 
   // Basic validation
   if (!name || !date || !time || !venue || !organizer || !flyerFile || ticketTypes.length === 0) {
