@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const stripePriceIds = {
                 picnic_mat: 'price_1R9q764ZyAT5oIFLt3qvmW9J',
-                camping_chair: 'price_1R9q7V4ZyAT5oIFLjFmPkEJ2'
+                camping_chair: 'price_1RyZVt4ZyAT5oIFLOhbLWNjE'
             };
 
             const stripe = Stripe("pk_test_51R9V5a4ZyAT5oIFL6UvbhT3aG2SdirrGBXvoABYEDXKiAUT3q4Nmoc8hDmEnouLjC2NO7TfUIU5UQefgUXJR3sON00AuMCHTdZ");

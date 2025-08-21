@@ -51,7 +51,7 @@ addTicketTypeBtn.addEventListener("click", () => {
     <input type="number" class="ticket-qty" placeholder="Enter quantity">
     
 
-    <label>Stripe Product ID</label>
+    <label>Stripe Price ID</label>
     <input type="text" class="ticket-product" placeholder="Enter Stripe Product ID">
   `;
 
@@ -81,7 +81,7 @@ document.querySelectorAll(".ticket-type").forEach((el) => {
       name: typeName,
       price: Number(typePrice),
       quantity: Number(typeQty),
-      productId: productId // new field
+      priceId: productId // new field
     });
   }
 });
